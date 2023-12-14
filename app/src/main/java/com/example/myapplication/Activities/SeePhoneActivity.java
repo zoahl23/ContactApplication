@@ -34,7 +34,7 @@ import java.util.Objects;
 
 public class SeePhoneActivity extends AppCompatActivity {
     ImageView imgAvtS, imgQr;
-    TextView tvNameS, tvSdtS;
+    TextView tvNameS, tvSdtS, tvMailS;
     Button btnQuayLai, btnTaoQr, btnLuuQr;
     Bitmap bitmapQrImage;
 
@@ -46,6 +46,7 @@ public class SeePhoneActivity extends AppCompatActivity {
         imgAvtS = findViewById(R.id.imgAvtS);
         tvNameS = findViewById(R.id.tvNameS);
         tvSdtS = findViewById(R.id.tvSdtS);
+        tvMailS = findViewById(R.id.tvMailS);
         btnQuayLai = findViewById(R.id.btnQuayLai);
 
         Intent intent = getIntent();
@@ -58,6 +59,7 @@ public class SeePhoneActivity extends AppCompatActivity {
         Glide.with(this).load(imageUri).into(imgAvtS);
         tvNameS.setText(pn.getTen());
         tvSdtS.setText(pn.getSdt());
+        tvMailS.setText(pn.getMail());
 
         btnLuuQr = findViewById(R.id.btnLuuQr);
         btnTaoQr = findViewById(R.id.btnTaoQr);

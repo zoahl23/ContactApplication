@@ -7,17 +7,19 @@ public class PhoneNumber implements Serializable {
     String ten;
     String sdt;
     String avt;
+    String mail;
 
 
     public PhoneNumber() {
 
     }
 
-    public PhoneNumber(String key, String ten, String sdt, String avt) {
+    public PhoneNumber(String key, String ten, String sdt, String avt, String mail) {
         this.key = key;
         this.ten = ten;
         this.sdt = sdt;
         this.avt = avt;
+        this.mail = mail;
     }
 
     public String getKey() {
@@ -52,4 +54,11 @@ public class PhoneNumber implements Serializable {
         this.avt = avt;
     }
 
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
+    }
 }

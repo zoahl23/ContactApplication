@@ -66,7 +66,8 @@ public class PhoneAdapter extends ArrayAdapter implements Filterable {
                     listPNFilter = new ArrayList<>();
                     for (PhoneNumber p: listPNBack) {
                         if (p.getTen().toLowerCase().contains(s) ||
-                                p.getSdt().toLowerCase().contains(s)) {
+                                p.getSdt().toLowerCase().contains(s) ||
+                                    p.getMail().toLowerCase().contains(s)) {
                             listPNFilter.add(p);
                         }
                     }
@@ -92,10 +93,12 @@ public class PhoneAdapter extends ArrayAdapter implements Filterable {
         ImageView imgAvt = customView.findViewById(R.id.imgAvt);
         TextView tvTen = customView.findViewById(R.id.tvTen);
         TextView tvSdt = customView.findViewById(R.id.tvSdt);
+        TextView tvMail = customView.findViewById(R.id.tvMail);
         PhoneNumber p = this.listPN.get(position);
         Glide.with(context.getBaseContext()).load(p.getAvt()).into(imgAvt);
         tvTen.setText(p.getTen());
         tvSdt.setText(p.getSdt());
+        tvMail.setText(p.getMail());
         return customView;
     }
 

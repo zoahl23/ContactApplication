@@ -65,10 +65,8 @@ import java.util.Date;
 import java.util.Objects;
 
 public class AddPhoneActivity extends AppCompatActivity {
-    EditText addEdtTen, addEdtSdt, addEdtAvt;
+    EditText addEdtTen, addEdtSdt, addEdtMail;
     Button btnThemMoi, btnHuyThem, btnTaiQr, btnQuetQr;
-    RadioGroup rGender;
-    RadioButton rMale, rFemale;
 
     // Ánh xạ giao diện tải ảnh lên
     ImageView imgTaiAnh;
@@ -128,11 +126,9 @@ public class AddPhoneActivity extends AppCompatActivity {
 
         addEdtTen = findViewById(R.id.addEdtTen);
         addEdtSdt = findViewById(R.id.addEdtSdt);
+        addEdtMail = findViewById(R.id.addEdtMail);
         btnThemMoi = findViewById(R.id.btnThemMoi);
         btnHuyThem = findViewById(R.id.btnHuyThem);
-        rGender = findViewById(R.id.rGender);
-        rMale = findViewById(R.id.rMale);
-        rFemale = findViewById(R.id.rFemale);
         imgTaiAnh = findViewById(R.id.imgTaiAnh);
         btnTaiAnh = findViewById(R.id.btnTaiAnh);
         btnTaiQr = findViewById(R.id.btnTaiQr);
@@ -173,10 +169,11 @@ public class AddPhoneActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String ten = addEdtTen.getText().toString().trim();
                 String sdt = addEdtSdt.getText().toString().trim();
-                if(ten.length()>0&&sdt.length()>0){
+                String mail = addEdtMail.getText().toString().trim();
+                if(ten.length()>0 && sdt.length()>0 && mail.length()>0){
                     //tạo ra 1 khóa chính ngẫu nhiên cho từng user nhưng phải xóa các kí tự đặc biệt vì firebase k cho phép
                     String key=contactsRef.push().getKey().toString().replace("-", "");
-                    PhoneNumber phoneNumber=new PhoneNumber(key,ten,sdt,"");
+                    PhoneNumber phoneNumber=new PhoneNumber(key,ten,sdt,"",mail);
                     //đặt tên ảnh trùng với key
                     StorageReference anhDaiDienRef=storageReference.child("avt").child(key + ".jpg");
                     //từ đoạn này là nén ảnh để đẩy lên trên firebase

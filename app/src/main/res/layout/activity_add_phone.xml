@@ -19,37 +19,22 @@
             android:layout_margin="20dp"/>
         <EditText
             android:id="@+id/addEdtTen"
-            android:hint="Nhập tên liên lạc mới"
+            android:hint="Nhập tên liên lạc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"/>
         <EditText
             android:id="@+id/addEdtSdt"
-            android:hint="Nhập số liên lạc mới"
+            android:hint="Nhập số liên lạc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"/>
-        <RadioGroup
-            android:id="@+id/rGender"
-            android:layout_width="wrap_content"
+        <EditText
+            android:id="@+id/addEdtMail"
+            android:hint="Nhập số email"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <RadioButton
-                android:id="@+id/rMale"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Nam"
-                android:layout_marginRight="50dp"
-                android:textSize="25dp"/>
-
-            <RadioButton
-                android:id="@+id/rFemale"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Nữ"
-                android:textSize="25dp"/>
-        </RadioGroup>
+            android:layout_marginBottom="10dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"

@@ -53,10 +53,8 @@ import java.util.Date;
 import java.util.Objects;
 
 public class EditActivity extends AppCompatActivity {
-    EditText suaEdtTen, suaEdtSdt;
+    EditText suaEdtTen, suaEdtSdt, suaEdtMail;
     Button btnSua, btnHuySua;
-    RadioGroup rSuaGender;
-    RadioButton rSuaMale, rSuaFemale;
     TextView tieuDeSuaTT;
     // Ánh xạ giao diện tải ảnh lên
     ImageView imgDoiAnh;
@@ -77,11 +75,9 @@ public class EditActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit);
         suaEdtSdt = findViewById(R.id.suaEdtSdt);
         suaEdtTen = findViewById(R.id.suaEdtTen);
+        suaEdtMail = findViewById(R.id.suaEdtMail);
         btnSua = findViewById(R.id.btnSua);
         btnHuySua = findViewById(R.id.btnHuySua);
-        rSuaGender = findViewById(R.id.rSuaGender);
-        rSuaMale = findViewById(R.id.rSuaMale);
-        rSuaFemale = findViewById(R.id.rSuaFemale);
         imgDoiAnh = findViewById(R.id.imgDoiAnh);
         btnDoiAnh = findViewById(R.id.btnDoiAnh);
         tieuDeSuaTT=findViewById(R.id.tvTieuDeSuaTT);
@@ -96,6 +92,7 @@ public class EditActivity extends AppCompatActivity {
                 tieuDeSuaTT.setText("Sửa Liên Hệ\n"+phoneNumber.getTen()+" - "+phoneNumber.getSdt());
                 suaEdtTen.setText(phoneNumber.getTen());
                 suaEdtSdt.setText(phoneNumber.getSdt());
+                suaEdtMail.setText(phoneNumber.getMail());
                 Glide.with(getBaseContext()).load(phoneNumber.getAvt()).into(imgDoiAnh);
 
             }
@@ -126,9 +123,10 @@ public class EditActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String ten = suaEdtTen.getText().toString().trim();
                 String sdt = suaEdtSdt.getText().toString().trim();
-                if(ten.length()>0&&sdt.length()>0){
+                String mail = suaEdtMail.getText().toString().trim();
+                if(ten.length()>0&&sdt.length()>0&&mail.length()>0){
 
-                    PhoneNumber phoneNumber=new PhoneNumber(key,ten,sdt,"");
+                    PhoneNumber phoneNumber=new PhoneNumber(key,ten,sdt,"",mail);
                     StorageReference anhDaiDienRef=storageReference.child("avt").child(key + ".jpg");
                     BitmapDrawable bitmapDrawable=(BitmapDrawable) imgDoiAnh.getDrawable();
                     Bitmap bitmap=bitmapDrawable.getBitmap();
