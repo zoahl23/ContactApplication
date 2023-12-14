@@ -144,6 +144,7 @@ public class AddPhoneActivity extends AppCompatActivity {
                     @Override
                     public void onActivityResult(Uri result) {
                         imgTaiAnh.setImageURI(result);
+                        Log.d("Image URI 2", String.valueOf(result));
                     }
                 }
         );

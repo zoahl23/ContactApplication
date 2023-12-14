@@ -64,6 +64,20 @@ public class MainActivity extends AppCompatActivity {
         docDuLieuFireBase();
         registerForContextMenu(lvPhoneNumber);
 
+        // nhấn vào item để chuyển qua trang xem chi tiết
+        lvPhoneNumber.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent xemChiTietIntent = new Intent(MainActivity.this, SeePhoneActivity.class);
+                Bundle data = new Bundle();
+                PhoneNumber pn = listPN.get(i);
+                data.putSerializable("pn_value", pn);
+                xemChiTietIntent.putExtras(data);
+                startActivity(xemChiTietIntent);
+                Toast.makeText(MainActivity.this, listPN.get(i).getTen(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
     //lấy data trong cơ sở dữ liệu rồi add vào list PN
     public void docDuLieuFireBase(){

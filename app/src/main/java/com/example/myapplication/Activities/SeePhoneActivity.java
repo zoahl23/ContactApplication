@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.model.PhoneNumber;
 import com.google.zxing.BarcodeFormat;
@@ -51,7 +52,10 @@ public class SeePhoneActivity extends AppCompatActivity {
         Bundle data = intent.getExtras();
         PhoneNumber pn = (PhoneNumber) data.get("pn_value");
 
-        imgAvtS.setImageResource(Integer.parseInt(pn.getAvt()));
+        // lấy địa chỉ ảnh trên firebase = "http://...." kiểu vậy
+        String imageUri = String.valueOf(pn.getAvt());
+        // hiển thị ảnh
+        Glide.with(this).load(imageUri).into(imgAvtS);
         tvNameS.setText(pn.getTen());
         tvSdtS.setText(pn.getSdt());
 
