@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activities.AddPhoneActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+        <TextView
+            android:text="Thêm liên lạc mới"
+            android:gravity="center"
+            android:textSize="10pt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"/>
+        <EditText
+            android:id="@+id/addEdtTen"
+            android:hint="Nhập tên liên lạc mới"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"/>
+        <EditText
+            android:id="@+id/addEdtSdt"
+            android:hint="Nhập số liên lạc mới"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"/>
+        <RadioGroup
+            android:id="@+id/rGender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rMale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nam"
+                android:layout_marginRight="50dp"
+                android:textSize="25dp"/>
+
+            <RadioButton
+                android:id="@+id/rFemale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nữ"
+                android:textSize="25dp"/>
+        </RadioGroup>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <Button
+                android:id="@+id/btnThemMoi"
+                android:text="Thêm mới"
+                android:backgroundTint="#2196F3"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"/>
+            <Button
+                android:id="@+id/btnHuyThem"
+                android:text="Hủy thêm mới"
+                android:backgroundTint="#FF5722"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="5dp">
+            <Button
+                android:id="@+id/btnQuetQr"
+                android:text="Quét QR"
+                android:backgroundTint="#4CAF50"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"/>
+            <Button
+                android:id="@+id/btnTaiQr"
+                android:text="Tải QR lên"
+                android:backgroundTint="#FFC107"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnTaiAnh"
+            android:layout_width="150dp"
+            android:backgroundTint="#db67a3"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Tải ảnh lên" />
+
+        <ImageView
+            android:id="@+id/imgTaiAnh"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_marginTop="20dp"/>
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

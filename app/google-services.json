@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "1049245369603",
+    "firebase_url": "https://duandanhba-b6dd6-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "duandanhba-b6dd6",
+    "storage_bucket": "duandanhba-b6dd6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1049245369603:android:a3cb1f3f0aaff27ff81536",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA71H4s7cWj2KSD8_Z33U9GJq1OLhgH-Kg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

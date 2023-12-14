@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activities.SeePhoneActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+        <ImageView
+            android:id="@+id/imgAvtS"
+            android:src="@drawable/a"
+            android:layout_gravity="center"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginBottom="30dp"/>
+        <TextView
+            android:id="@+id/tvNameS"
+            android:text="Nguyễn Văn A"
+            android:textSize="30dp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginBottom="10dp"/>
+        <TextView
+            android:id="@+id/tvSdtS"
+            android:text="0346677956"
+            android:textSize="20dp"
+            android:textStyle="italic"
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginBottom="10dp"/>
+        <Button
+            android:id="@+id/btnTaoQr"
+            android:text="Tạo QR"
+            android:backgroundTint="#009688"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="20dp"
+            android:layout_marginBottom="10dp"/>
+        <ImageView
+            android:id="@+id/imgQr"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginBottom="10dp"/>
+        <Button
+            android:id="@+id/btnLuuQr"
+            android:text="Lưu ảnh QR"
+            android:backgroundTint="#4CAF50"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="20dp"
+            android:layout_marginBottom="2dp"/>
+        <Button
+            android:id="@+id/btnQuayLai"
+            android:text="Quay lại"
+            android:backgroundTint="#FF9800"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="20dp"/>
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
