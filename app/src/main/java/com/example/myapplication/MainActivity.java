@@ -112,8 +112,9 @@ public class MainActivity extends AppCompatActivity {
         String title="Thao tác với: "+phoneNumber.getTen();
         menu.setHeaderTitle(title);
         menu.add(0,v.getId(),0,"Gọi Điện Thoại");
-        menu.add(0,v.getId(),1,"Sửa Thông Tin");
-        menu.add(0,v.getId(),2,"Xóa Liên Hệ");
+        menu.add(0,v.getId(),1,"Nhắn tin");
+        menu.add(0,v.getId(),2,"Sửa Thông Tin");
+        menu.add(0,v.getId(),3,"Xóa Liên Hệ");
 
     }
     //code thao tác chức năng sửa xóa gọi
@@ -131,16 +132,24 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this,"Gọi Tới Số: "+ phoneNumber.getSdt(),
                         Toast.LENGTH_SHORT).show();
                 break;
-                //sửa thông tin liên hệ
+            // case gửi sms
             case 1:
+                Uri smsURI=Uri.parse("smsto: "+ phoneNumber.getSdt());
+                Intent nhanTin= new Intent(Intent.ACTION_SENDTO, smsURI);
+                startActivity(nhanTin);
+                Toast.makeText(this,"Nhắn tin tới số: "+ phoneNumber.getSdt(),
+                        Toast.LENGTH_SHORT).show();
+                break;
+            //sửa thông tin liên hệ
+            case 2:
                 Intent editTT=new Intent(MainActivity.this, EditActivity.class);
                 Bundle bundle=new Bundle();
                 bundle.putString("key",phoneNumber.getKey());
                 editTT.putExtras(bundle);
                 startActivity(editTT);
                 break;
-                //xóa liên hệ
-            case 2:
+            //xóa liên hệ
+            case 3:
                 String thongDiep="Bạn Thực Sự Muốn Xóa "
                         + phoneNumber.getTen()+" - "+ phoneNumber.getSdt()+"?";
                 AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this);

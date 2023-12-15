@@ -35,7 +35,7 @@ import java.util.Objects;
 public class SeePhoneActivity extends AppCompatActivity {
     ImageView imgAvtS, imgQr;
     TextView tvNameS, tvSdtS, tvMailS;
-    Button btnQuayLai, btnTaoQr, btnLuuQr;
+    Button btnQuayLai, btnTaoQr, btnLuuQr, btnZalo, btnMail;
     Bitmap bitmapQrImage;
 
     @Override
@@ -63,6 +63,8 @@ public class SeePhoneActivity extends AppCompatActivity {
 
         btnLuuQr = findViewById(R.id.btnLuuQr);
         btnTaoQr = findViewById(R.id.btnTaoQr);
+        btnZalo = findViewById(R.id.btnZalo);
+        btnMail = findViewById(R.id.btnMail);
         imgQr = findViewById(R.id.imgQr);
 
         btnTaoQr.setOnClickListener(new View.OnClickListener() {
@@ -80,6 +82,38 @@ public class SeePhoneActivity extends AppCompatActivity {
                         Toast.makeText(SeePhoneActivity.this, "Lỗi tạo QR: " + e.toString(), Toast.LENGTH_SHORT).show();
                     }
                 }
+            }
+        });
+
+        btnMail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intentMail = new Intent(Intent.ACTION_SEND);
+                intentMail.putExtra(Intent.EXTRA_EMAIL, pn.getMail());
+//                intentMail.setData( Uri.parse("mailto:" + pn.getMail()));
+                intentMail.putExtra(Intent.EXTRA_SUBJECT, "huhu");
+                intentMail.putExtra(Intent.EXTRA_TEXT, "hihi");
+                intentMail.setType("message/rfc822");
+                Log.d("mail", pn.getMail());
+                // cho chọn ứng dụng mail muốn dùng
+                startActivity(Intent.createChooser(intentMail, "Choose email client"));
+//                startActivity(intentMail);
+            }
+        });
+
+        btnZalo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intentZalo = new Intent();
+                intentZalo.setAction(Intent.ACTION_SEND);
+                intentZalo.setType("text/plain");
+                intentZalo.putExtra(Intent.EXTRA_TEXT, pn.getSdt());
+                intentZalo.setPackage("com.zing.zalo");
+//                intentZalo.setData(Uri.parse("https://zalo.me/"));
+//                intentZalo.setData(Uri.parse("https://example.com/"));
+                Log.d("zalo", String.valueOf(intentZalo));
+
+                startActivity(intentZalo);
             }
         });
 
