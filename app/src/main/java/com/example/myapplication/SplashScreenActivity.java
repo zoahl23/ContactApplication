@@ -14,7 +14,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash_screen);
 
         // ẩn thanh ActionBar đi
-        getSupportActionBar().hide();// get là lấy và hide là ẩn
+        //getSupportActionBar().hide();// get là lấy và hide là ẩn
 
         // delay để hiển thị
         new Handler().postDelayed(new Runnable() {
@@ -27,7 +27,9 @@ public class SplashScreenActivity extends AppCompatActivity {
                 // khỏi tạo quá trình chuyển đến
                 startActivity(intent);
 
+                finish();
             }
         }, 5000); // delay 5s
+
     }
 }

@@ -7,8 +7,16 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import android.Manifest;
+import android.app.Activity;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ContentResolver;
@@ -16,8 +24,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -36,6 +46,8 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.example.myapplication.Database.SQLiteConnect;
+import com.example.myapplication.MainActivity;
+import com.example.myapplication.NotificationActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.adapters.PhoneAdapter;
 import com.example.myapplication.model.PhoneNumber;
@@ -134,6 +146,19 @@ public class AddPhoneActivity extends AppCompatActivity {
         btnTaiQr = findViewById(R.id.btnTaiQr);
         btnQuetQr = findViewById(R.id.btnQuetQr);
 
+        // kiểm tra phiên bản của máy đang chạy có đủ cao không, yêu cầu Android 8.0 trở lên mới hiển thị
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // kiểm tra ứng dụng đã được cấp quyền thông báo chưa
+            if (ContextCompat.checkSelfPermission(AddPhoneActivity.this,
+                    Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+
+                // nếu quyền chưa được cấp, yêu cầu quyền
+                ActivityCompat.requestPermissions(AddPhoneActivity.this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
+                // mảng chứa các yêu cầu quyền
+            }
+        }
+
         ActivityResultLauncher chonAnh=registerForActivityResult(
                 new ActivityResultContracts.GetContent(),
                 new ActivityResultCallback<Uri>() {
@@ -196,6 +221,7 @@ public class AddPhoneActivity extends AppCompatActivity {
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if(task.isSuccessful()){
                                                 Toast.makeText(AddPhoneActivity.this,"Thêm Liên Hệ Thành Công!",Toast.LENGTH_SHORT).show();
+                                                makeNotification("Thông báo", "Bạn vừa thêm thành công một liên hệ mới");
                                             }
                                         }
                                     });
@@ -239,7 +265,44 @@ public class AddPhoneActivity extends AppCompatActivity {
         }
     });
 
+    // hàm hiển thị thông báo
+    protected void makeNotification(String title, String text) {
+        String chanelId = "CHANNEL_ID_NOTIFICATION"; // xác định kênh thông báo
+        NotificationCompat.Builder buider = new NotificationCompat.Builder(getApplicationContext(), chanelId); // xây dựng thông báo
+        buider.setSmallIcon(R.drawable.ic_notifications) // biểu tượng thông báo
+                .setContentTitle(title) // tiêu đề thông báo
+                .setContentText(text)  // nội dung thông báo
+                .setAutoCancel(true)  // tự động mất nếu chạm vào thông báo
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT); // ưu tiên thông báo
 
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // cờ này để xác định thông báo đã tồn tại trên đỉnh chưa
+
+        // hành động sẽ xảy ra trong tương lai, tức là mở thông báo (notificationActivity) khi kích hoạt
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),
+                0, intent, PendingIntent.FLAG_MUTABLE);
+        buider.setContentIntent(pendingIntent);
+        // hiển thị thông báo, Android 8.0 trở lên mới hiển thị
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // kiểm tra thông báo đã tồn tại chưa
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel =
+                    notificationManager.getNotificationChannel(chanelId);
+            if (notificationChannel == null) {
+                // nếu chưa tồn tại thì khởi tạo 1 thông báo với mức độ ưu tiên cao
+                int importance = NotificationManager.IMPORTANCE_HIGH;
+                // mô tả
+                notificationChannel = new NotificationChannel(chanelId, "Mô tả", importance);
+                notificationChannel.enableVibration(true); // bật chế độ rung cho thông báo
+                notificationManager.createNotificationChannel(notificationChannel);
+            }
+        }
+
+        // hiển thị thông báo đã được xây dựng
+        notificationManager.notify(0, buider.build());
+    }
     protected void scanCodeFromCamera() {
         ScanOptions options = new ScanOptions();
         options.setPrompt("Nhấn nút tăng âm lượng để bật flash");

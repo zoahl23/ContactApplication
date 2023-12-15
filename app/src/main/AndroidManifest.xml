@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
-<!--    Quyền truy cập sms   -->
-    <uses-permission android:name="android.permission.SEND_SMS"/>
+    <!--   Thông báo     -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- SMS -->
+    <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-feature
@@ -20,29 +21,35 @@
         android:name="android.permission.CAMERA"
         android:required="true"
         android:requiredFeature="true" />
-<!--    Quyền truy cập vào email  -->
+    <!-- Email -->
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-<!--    Quyền mở app sms    -->
+    <!-- SMS -->
     <uses-feature
         android:name="android.hardware.telephony"
         android:required="false" />
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
-<!--    Quyền truy cập vào zalo    -->
+    <!-- Zalo -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
+<!--            android:icon="@mipmap/ic_launcher"
+@mipmap/ic_launcher_round
+-->
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/logo"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication"
         tools:targetApi="31">
+        <activity
+            android:name=".NotificationActivity"
+            android:exported="false" />
         <activity
             android:name=".SplashScreenActivity"
             android:exported="true">
@@ -69,10 +76,7 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="true">
-
-        </activity>
-
+            android:exported="false"></activity> <!-- true -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.myapplication.fileprovider"

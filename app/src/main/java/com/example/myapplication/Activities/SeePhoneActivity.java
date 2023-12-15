@@ -1,9 +1,14 @@
 package com.example.myapplication.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.model.PhoneNumber;
 import com.google.zxing.BarcodeFormat;
@@ -89,15 +95,16 @@ public class SeePhoneActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intentMail = new Intent(Intent.ACTION_SEND);
-                intentMail.putExtra(Intent.EXTRA_EMAIL, pn.getMail());
+//                intentMail.putExtra(Intent.EXTRA_EMAIL, pn.getMail());
+                intentMail.putExtra(Intent.EXTRA_EMAIL, new String[]{pn.getMail()});
 //                intentMail.setData( Uri.parse("mailto:" + pn.getMail()));
                 intentMail.putExtra(Intent.EXTRA_SUBJECT, "huhu");
                 intentMail.putExtra(Intent.EXTRA_TEXT, "hihi");
                 intentMail.setType("message/rfc822");
                 Log.d("mail", pn.getMail());
                 // cho chọn ứng dụng mail muốn dùng
-                startActivity(Intent.createChooser(intentMail, "Choose email client"));
-//                startActivity(intentMail);
+//                startActivity(Intent.createChooser(intentMail, "Choose email client"));
+                startActivity(intentMail);
             }
         });
 
@@ -109,11 +116,18 @@ public class SeePhoneActivity extends AppCompatActivity {
                 intentZalo.setType("text/plain");
                 intentZalo.putExtra(Intent.EXTRA_TEXT, pn.getSdt());
                 intentZalo.setPackage("com.zing.zalo");
-//                intentZalo.setData(Uri.parse("https://zalo.me/"));
-//                intentZalo.setData(Uri.parse("https://example.com/"));
+
                 Log.d("zalo", String.valueOf(intentZalo));
 
-                startActivity(intentZalo);
+                // Kiểm tra xem có ứng dụng Zalo đã được cài đặt hay chưa
+                if (intentZalo.resolveActivity(getPackageManager()) != null) {
+                    startActivity(intentZalo);
+                } else {
+                    // intentZalo.setData(Uri.parse("https://zalo.me/"));
+                    // thông báo cho người dùng
+                    Toast.makeText(getApplicationContext(), "Ứng dụng Zalo chưa được cài đặt", Toast.LENGTH_SHORT).show();
+                    makeNotification("Lỗi", "Ứng dụng Zalo chưa được cài đặt");
+                }
             }
         });
 
@@ -158,9 +172,49 @@ public class SeePhoneActivity extends AppCompatActivity {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
             Objects.requireNonNull(outputStream);
             Toast.makeText(this, "Đã lưu ảnh " + timeStamp + ".jpg", Toast.LENGTH_LONG).show();
+            makeNotification("Thông báo", "Đã lưu ảnh thành công");
         } catch (Exception e) {
             Log.d("Lỗi lưu ảnh", e.toString());
             Toast.makeText(SeePhoneActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    // hàm hiển thị thông báo
+    protected void makeNotification(String title, String text) {
+        String chanelId = "CHANNEL_ID_NOTIFICATION"; // xác định kênh thông báo
+        NotificationCompat.Builder buider = new NotificationCompat.Builder(getApplicationContext(), chanelId); // xây dựng thông báo
+        buider.setSmallIcon(R.drawable.ic_notifications) // biểu tượng thông báo
+                .setContentTitle(title) // tiêu đề thông báo
+                .setContentText(text)  // nội dung thông báo
+                .setAutoCancel(true)  // tự động mất nếu chạm vào thông báo
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT); // ưu tiên thông báo
+
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // cờ này để xác định thông báo đã tồn tại trên đỉnh chưa
+
+        // hành động sẽ xảy ra trong tương lai, tức là mở thông báo (notificationActivity) khi kích hoạt
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),
+                0, intent, PendingIntent.FLAG_MUTABLE);
+        buider.setContentIntent(pendingIntent);
+        // hiển thị thông báo, Android 8.0 trở lên mới hiển thị
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // kiểm tra thông báo đã tồn tại chưa
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel =
+                    notificationManager.getNotificationChannel(chanelId);
+            if (notificationChannel == null) {
+                // nếu chưa tồn tại thì khởi tạo 1 thông báo với mức độ ưu tiên cao
+                int importance = NotificationManager.IMPORTANCE_HIGH;
+                // mô tả
+                notificationChannel = new NotificationChannel(chanelId, "Mô tả", importance);
+                notificationChannel.enableVibration(true); // bật chế độ rung cho thông báo
+                notificationManager.createNotificationChannel(notificationChannel);
+            }
+        }
+
+        // hiển thị thông báo đã được xây dựng
+        notificationManager.notify(0, buider.build());
     }
 }

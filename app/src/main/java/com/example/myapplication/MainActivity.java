@@ -78,6 +78,34 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //  ======= code này lấy ở file 30/10 trên drive Linh up =======
+
+//        lvPhoneNumber.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                Intent xemChiTietIntent = new Intent(getBaseContext(), SeePhoneActivity.class);
+//                Bundle data = new Bundle();
+//                //hàm getData_test đươc tạo ở trong phần PhoneAdapter.java
+//                if(adapterPN.getData_test().length()>0){
+//                    for(int p=0;p<listPN.size();p++){
+//                        if(listPN.get(p).getTen().contains(adapterPN.getData_test())){
+//                            data.putSerializable("pn_value", listPN.get(p));
+//                            xemChiTietIntent.putExtras(data);
+//                            startActivity(xemChiTietIntent);
+//                            Toast.makeText(MainActivity.this, listPN.get(p).getTen(), Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
+//                }
+//                else{
+//                    PhoneNumber pn = listPN.get(i);
+//                    data.putSerializable("pn_value", pn);
+//                    xemChiTietIntent.putExtras(data);
+//                    startActivity(xemChiTietIntent);
+//                    Toast.makeText(MainActivity.this, listPN.get(i).getTen(), Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
+
     }
     //lấy data trong cơ sở dữ liệu rồi add vào list PN
     public void docDuLieuFireBase(){

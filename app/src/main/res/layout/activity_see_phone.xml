@@ -45,47 +45,52 @@
             android:layout_width="wrap_content"
             android:layout_height="30dp"
             android:layout_marginBottom="10dp"/>
-        <Button
-            android:id="@+id/btnZalo"
-            android:text="Tìm trên Zalo"
-            android:backgroundTint="#0065f7"
-            android:layout_width="300dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="20dp"
-            android:layout_marginBottom="0dp"/>
-        <Button
-            android:id="@+id/btnMail"
-            android:text="Gửi Email"
-            android:backgroundTint="#F44336"
-            android:layout_width="300dp"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <Button
+                android:id="@+id/btnZalo"
+                android:text="Tìm trên Zalo"
+                android:backgroundTint="#0065f7"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"/>
+            <Button
+                android:id="@+id/btnMail"
+                android:text="Gửi Email"
+                android:backgroundTint="#F44336"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="20dp"
-            android:layout_marginBottom="0dp"/>
-        <Button
-            android:id="@+id/btnTaoQr"
-            android:text="Tạo QR"
-            android:backgroundTint="#009688"
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="20dp"
-            android:layout_marginBottom="10dp"/>
+            android:orientation="horizontal"
+            android:gravity="center">
+            <Button
+                android:id="@+id/btnTaoQr"
+                android:text="Tạo QR"
+                android:backgroundTint="#009688"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"/>
+            <Button
+                android:id="@+id/btnLuuQr"
+                android:text="Lưu ảnh QR"
+                android:backgroundTint="#4CAF50"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
         <ImageView
             android:id="@+id/imgQr"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:layout_marginBottom="10dp"/>
-        <Button
-            android:id="@+id/btnLuuQr"
-            android:text="Lưu ảnh QR"
-            android:backgroundTint="#4CAF50"
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="20dp"
-            android:layout_marginBottom="2dp"/>
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"/>
+
         <Button
             android:id="@+id/btnQuayLai"
             android:text="Quay lại"

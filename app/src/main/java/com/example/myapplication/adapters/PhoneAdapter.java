@@ -43,6 +43,10 @@ public class PhoneAdapter extends ArrayAdapter implements Filterable {
         this.resource = resource;
         this.listPN = this.listPNBack = listPN;
     }
+    //tạo 1 hàm return ra data_test
+    public String getData_test(){
+        return data_test;
+    }
 
     public int getCount() {
         return listPN.size();
