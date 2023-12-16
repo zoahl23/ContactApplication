@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -8,13 +9,19 @@ import android.os.Handler;
 
 public class SplashScreenActivity extends AppCompatActivity {
 
+    private ActionBar actionBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
-        // ẩn thanh ActionBar đi
-        //getSupportActionBar().hide();// get là lấy và hide là ẩn
+        // lấy action bar
+        actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            // ẩn
+            actionBar.hide();
+        }
 
         // delay để hiển thị
         new Handler().postDelayed(new Runnable() {

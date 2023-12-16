@@ -1,19 +1,18 @@
 package com.example.myapplication.Activities;
 
-import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -27,33 +26,25 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import com.example.myapplication.Database.SQLiteConnect;
+import com.blogspot.atifsoftwares.circularimageview.CircularImageView;
 import com.example.myapplication.MainActivity;
-import com.example.myapplication.NotificationActivity;
 import com.example.myapplication.R;
-import com.example.myapplication.adapters.PhoneAdapter;
 import com.example.myapplication.model.PhoneNumber;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -69,7 +60,6 @@ import com.journeyapps.barcodescanner.ScanIntentResult;
 import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
@@ -77,21 +67,18 @@ import java.util.Date;
 import java.util.Objects;
 
 public class AddPhoneActivity extends AppCompatActivity {
-    EditText addEdtTen, addEdtSdt, addEdtMail;
-    Button btnThemMoi, btnHuyThem, btnTaiQr, btnQuetQr;
+    private EditText addEdtTen, addEdtSdt, addEdtMail;
+    private FloatingActionButton btnThemMoi, btnScanQr;
+    private CircularImageView imgTaiAnh;
 
-    // Ánh xạ giao diện tải ảnh lên
-    ImageView imgTaiAnh;
-    Button btnTaiAnh;
-    // khi chụp xong sẽ cập nhật tự động vào đường dẫn này
-    String currenPhotoPath;
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private ActionBar actionBar;
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
     //lấy toàn bộ key của database
-    DatabaseReference get_key = database.getReference();
+    private DatabaseReference get_key = database.getReference();
     //trỏ vào key cụ thể ở đây là key contact để lấy data trong key đó
-    DatabaseReference contactsRef=get_key.child("contact");
-    FirebaseStorage firebaseStorage=FirebaseStorage.getInstance();
-    StorageReference storageReference=firebaseStorage.getReference();
+    private DatabaseReference contactsRef=get_key.child("contact");
+    private FirebaseStorage firebaseStorage=FirebaseStorage.getInstance();
+    private StorageReference storageReference=firebaseStorage.getReference();
 
 
     ActivityResultLauncher scanFromImageLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), new ActivityResultCallback<Uri>() {
@@ -136,28 +123,34 @@ public class AddPhoneActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_phone);
 
+        // lấy action bar
+        actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            // tiêu đề
+            actionBar.setTitle("Thêm liên hệ");
+            // hiển thị nút back (có hàm xử lý phía dưới)
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
         addEdtTen = findViewById(R.id.addEdtTen);
         addEdtSdt = findViewById(R.id.addEdtSdt);
         addEdtMail = findViewById(R.id.addEdtMail);
         btnThemMoi = findViewById(R.id.btnThemMoi);
-        btnHuyThem = findViewById(R.id.btnHuyThem);
         imgTaiAnh = findViewById(R.id.imgTaiAnh);
-        btnTaiAnh = findViewById(R.id.btnTaiAnh);
-        btnTaiQr = findViewById(R.id.btnTaiQr);
-        btnQuetQr = findViewById(R.id.btnQuetQr);
+        btnScanQr = findViewById(R.id.btnScanQr);
 
         // kiểm tra phiên bản của máy đang chạy có đủ cao không, yêu cầu Android 8.0 trở lên mới hiển thị
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // kiểm tra ứng dụng đã được cấp quyền thông báo chưa
-            if (ContextCompat.checkSelfPermission(AddPhoneActivity.this,
-                    Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-
-                // nếu quyền chưa được cấp, yêu cầu quyền
-                ActivityCompat.requestPermissions(AddPhoneActivity.this,
-                        new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
-                // mảng chứa các yêu cầu quyền
-            }
-        }
+//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            // kiểm tra ứng dụng đã được cấp quyền thông báo chưa
+//            if (ContextCompat.checkSelfPermission(AddPhoneActivity.this,
+//                    Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+//
+//                // nếu quyền chưa được cấp, yêu cầu quyền
+//                ActivityCompat.requestPermissions(AddPhoneActivity.this,
+//                        new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
+//                // mảng chứa các yêu cầu quyền
+//            }
+//        }
 
         ActivityResultLauncher chonAnh=registerForActivityResult(
                 new ActivityResultContracts.GetContent(),
@@ -169,24 +162,53 @@ public class AddPhoneActivity extends AppCompatActivity {
                     }
                 }
         );
-        btnTaiQr.setOnClickListener(new View.OnClickListener() {
+        btnScanQr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                scanFromImageLauncher.launch("image/*");
+                AlertDialog.Builder builder = new AlertDialog.Builder(AddPhoneActivity.this);
+                builder.setTitle("Chọn tùy chọn QR");
+                String[] options = {"Tải ảnh QR", "Quét QR"};
+
+                builder.setItems(options, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (which == 0) {
+                            // Tải ảnh QR
+                            scanFromImageLauncher.launch("image/*");
+                        }
+                        else if (which == 1) {
+                            // Quét QR
+                            scanCodeFromCamera();
+                        }
+                    }
+                });
+
+                builder.show();
             }
         });
 
-        btnQuetQr.setOnClickListener(new View.OnClickListener() {
+        imgTaiAnh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                scanCodeFromCamera();
-            }
-        });
+                AlertDialog.Builder builder = new AlertDialog.Builder(AddPhoneActivity.this);
+                builder.setTitle("Chọn ảnh");
 
-        btnTaiAnh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                chonAnh.launch("image/*");
+                String[] options = {"Chụp ảnh mới", "Tải ảnh lên"};
+
+                builder.setItems(options, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (which == 0) {
+                            // tạm thời chưa làm được
+                            chonAnh.launch("image/*");
+                        } else if (which == 1) {
+                            // Tải ảnh từ thư viện
+                            chonAnh.launch("image/*");
+                        }
+                    }
+                });
+
+                builder.show();
             }
         });
         btnThemMoi.setOnClickListener(new View.OnClickListener() {
@@ -234,13 +256,6 @@ public class AddPhoneActivity extends AppCompatActivity {
 
             }
         });
-
-        btnHuyThem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
     }
     ActivityResultLauncher scanCodeFromCameraLauncher = registerForActivityResult(new ScanContract(), new ActivityResultCallback<ScanIntentResult>() {
         @Override
@@ -264,6 +279,20 @@ public class AddPhoneActivity extends AppCompatActivity {
             }
         }
     });
+
+    // xử lý nút back trên actionBar
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        // nhấn vào nút back
+        if (id == android.R.id.home) {
+            // quay về MainActivity
+            finish();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
     // hàm hiển thị thông báo
     protected void makeNotification(String title, String text) {

@@ -1,5 +1,6 @@
 package com.example.myapplication.Activities;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 
@@ -18,6 +19,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -39,21 +41,30 @@ import java.util.Date;
 import java.util.Objects;
 
 public class SeePhoneActivity extends AppCompatActivity {
-    ImageView imgAvtS, imgQr;
-    TextView tvNameS, tvSdtS, tvMailS;
-    Button btnQuayLai, btnTaoQr, btnLuuQr, btnZalo, btnMail;
-    Bitmap bitmapQrImage;
+    private ImageView imgAvtS, imgQr;
+    private TextView tvNameS, tvSdtS, tvMailS;
+    private Button btnTaoQr, btnLuuQr, btnZalo, btnMail;
+    private Bitmap bitmapQrImage;
+    private ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_see_phone);
 
+        // lấy action bar
+        actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            // tiêu đề
+            actionBar.setTitle("Xem chi tiết");
+            // hiển thị nút back (có hàm xử lý phía dưới)
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
         imgAvtS = findViewById(R.id.imgAvtS);
         tvNameS = findViewById(R.id.tvNameS);
         tvSdtS = findViewById(R.id.tvSdtS);
         tvMailS = findViewById(R.id.tvMailS);
-        btnQuayLai = findViewById(R.id.btnQuayLai);
 
         Intent intent = getIntent();
         Bundle data = intent.getExtras();
@@ -137,13 +148,20 @@ public class SeePhoneActivity extends AppCompatActivity {
                 saveImg();
             }
         });
+    }
 
-        btnQuayLai.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+    // xử lý nút back trên actionBar
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        // nhấn vào nút back
+        if (id == android.R.id.home) {
+            // quay về MainActivity
+            finish();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     protected void saveImg() {

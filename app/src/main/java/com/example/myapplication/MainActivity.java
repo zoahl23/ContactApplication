@@ -6,6 +6,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
@@ -30,7 +31,6 @@ import android.widget.Toast;
 import com.example.myapplication.Activities.AddPhoneActivity;
 import com.example.myapplication.Activities.EditActivity;
 import com.example.myapplication.Activities.SeePhoneActivity;
-import com.example.myapplication.Database.SQLiteConnect;
 import com.example.myapplication.adapters.PhoneAdapter;
 import com.example.myapplication.model.PhoneNumber;
 import com.google.firebase.database.DataSnapshot;
@@ -42,20 +42,29 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    ListView lvPhoneNumber;
-    ArrayList<PhoneNumber> listPN,listPNFilter;
-    PhoneAdapter adapterPN;
+    private ListView lvPhoneNumber;
+    private ArrayList<PhoneNumber> listPN,listPNFilter;
+    private ActionBar actionBar;
+    private PhoneAdapter adapterPN;
     //khởi tạo biến database để sử dụng các chức năng của firebase
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
     //lấy toàn bộ key của database
-    DatabaseReference get_key = database.getReference();
+    private DatabaseReference get_key = database.getReference();
     //trỏ vào key cụ thể ở đây là key contact để lấy data trong key đó
-    DatabaseReference contactsRef=get_key.child("contact");
+    private DatabaseReference contactsRef=get_key.child("contact");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // lấy action bar
+        actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            // tiêu đề
+            actionBar.setTitle("Contact App");
+        }
+
         lvPhoneNumber = findViewById(R.id.lvPhoneNumber);
         listPN = new ArrayList<>();
         listPNFilter= new ArrayList<>();

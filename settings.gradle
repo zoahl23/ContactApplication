@@ -3,6 +3,9 @@ pluginManagement {
         google()
         mavenCentral()
         gradlePluginPortal()
+        // lấy khung ảnh tròn
+        maven { url 'https://jitpack.io' }
+        jcenter()
     }
 }
 dependencyResolutionManagement {
@@ -10,6 +13,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://jitpack.io' }
+        jcenter()
     }
 }
 rootProject.name = "My Application"

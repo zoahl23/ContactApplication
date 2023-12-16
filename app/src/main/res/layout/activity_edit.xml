@@ -52,20 +52,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="20dp"/>
             <Button
-                android:id="@+id/btnHuySua"
-                android:text="Hủy bỏ"
-                android:backgroundTint="#FF5722"
+                android:id="@+id/btnDoiAnh"
                 android:layout_width="150dp"
-                android:layout_height="wrap_content"/>
+                android:backgroundTint="#db67a3"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Đổi ảnh mới" />
         </LinearLayout>
-
-        <Button
-            android:id="@+id/btnDoiAnh"
-            android:layout_width="150dp"
-            android:backgroundTint="#db67a3"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Đổi ảnh mới" />
 
         <ImageView
             android:id="@+id/imgDoiAnh"

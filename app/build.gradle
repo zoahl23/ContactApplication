@@ -32,6 +32,8 @@ android {
 
 dependencies {
 
+    // circular view
+    implementation 'com.github.AtifSayings:CircularImageView:1.0.2'
     // thêm 3 thư viên này
     implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'

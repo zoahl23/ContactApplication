@@ -5,6 +5,7 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.FileProvider;
@@ -25,6 +26,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,7 +37,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.myapplication.Database.SQLiteConnect;
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.model.PhoneNumber;
@@ -59,31 +60,39 @@ import java.util.Date;
 import java.util.Objects;
 
 public class EditActivity extends AppCompatActivity {
-    EditText suaEdtTen, suaEdtSdt, suaEdtMail;
-    Button btnSua, btnHuySua;
-    TextView tieuDeSuaTT;
+    private EditText suaEdtTen, suaEdtSdt, suaEdtMail;
+    private Button btnSua;
+    private TextView tieuDeSuaTT;
     // Ánh xạ giao diện tải ảnh lên
-    ImageView imgDoiAnh;
-    Button btnDoiAnh;
-    // khi chụp xong sẽ cập nhật tự động vào đường dẫn này
-    String currenPhotoPath;
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private ImageView imgDoiAnh;
+    private Button btnDoiAnh;
+    private ActionBar actionBar;
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
     //lấy toàn bộ key của database
-    DatabaseReference get_key = database.getReference();
+    private DatabaseReference get_key = database.getReference();
     //trỏ vào key cụ thể ở đây là key contact để lấy data trong key đó
-    DatabaseReference contactsRef=get_key.child("contact");
-    FirebaseStorage firebaseStorage=FirebaseStorage.getInstance();
-    StorageReference storageReference=firebaseStorage.getReference();
+    private DatabaseReference contactsRef=get_key.child("contact");
+    private FirebaseStorage firebaseStorage=FirebaseStorage.getInstance();
+    private StorageReference storageReference=firebaseStorage.getReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
+
+        // lấy action bar
+        actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            // tiêu đề
+            actionBar.setTitle("Sửa liên hệ");
+            // hiển thị nút back (có hàm xử lý phía dưới)
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
         suaEdtSdt = findViewById(R.id.suaEdtSdt);
         suaEdtTen = findViewById(R.id.suaEdtTen);
         suaEdtMail = findViewById(R.id.suaEdtMail);
         btnSua = findViewById(R.id.btnSua);
-        btnHuySua = findViewById(R.id.btnHuySua);
         imgDoiAnh = findViewById(R.id.imgDoiAnh);
         btnDoiAnh = findViewById(R.id.btnDoiAnh);
         tieuDeSuaTT=findViewById(R.id.tvTieuDeSuaTT);
@@ -167,6 +176,20 @@ public class EditActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    // xử lý nút back trên actionBar
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        // nhấn vào nút back
+        if (id == android.R.id.home) {
+            // quay về MainActivity
+            finish();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     // hàm hiển thị thông báo
