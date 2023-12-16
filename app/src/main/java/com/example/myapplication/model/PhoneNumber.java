@@ -3,12 +3,7 @@ package com.example.myapplication.model;
 import java.io.Serializable;
 
 public class PhoneNumber implements Serializable {
-    String key;
-    String ten;
-    String sdt;
-    String avt;
-    String mail;
-
+    private String key, ten, sdt, avt, mail;
 
     public PhoneNumber() {
 

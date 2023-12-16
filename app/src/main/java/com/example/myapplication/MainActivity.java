@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -33,6 +34,7 @@ import com.example.myapplication.Activities.EditActivity;
 import com.example.myapplication.Activities.SeePhoneActivity;
 import com.example.myapplication.adapters.PhoneAdapter;
 import com.example.myapplication.model.PhoneNumber;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -44,6 +46,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
     private ListView lvPhoneNumber;
     private ArrayList<PhoneNumber> listPN,listPNFilter;
+    private FloatingActionButton btnAddPhone;
     private ActionBar actionBar;
     private PhoneAdapter adapterPN;
     //khởi tạo biến database để sử dụng các chức năng của firebase
@@ -65,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
             actionBar.setTitle("Contact App");
         }
 
+        btnAddPhone = findViewById(R.id.btnAddPhone);
         lvPhoneNumber = findViewById(R.id.lvPhoneNumber);
         listPN = new ArrayList<>();
         listPNFilter= new ArrayList<>();
@@ -84,6 +88,13 @@ public class MainActivity extends AppCompatActivity {
                 xemChiTietIntent.putExtras(data);
                 startActivity(xemChiTietIntent);
                 Toast.makeText(MainActivity.this, listPN.get(i).getTen(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        btnAddPhone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, AddPhoneActivity.class));
             }
         });
 
@@ -241,15 +252,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String s) {
                 adapterPN.getFilter().filter(s);
-                return false;
-            }
-        });
-        MenuItem menuItemA = menu.findItem(R.id.add_phone);
-        menuItemA.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(@NonNull MenuItem menuItem) {
-                Intent addIntent = new Intent(getBaseContext(), AddPhoneActivity.class);
-                addPhoneLauncher.launch(addIntent);
                 return false;
             }
         });

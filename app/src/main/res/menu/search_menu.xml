@@ -7,9 +7,4 @@
         android:icon="@drawable/search"
         app:showAsAction="ifRoom|withText"
         app:actionViewClass="android.widget.SearchView"/>
-    <item
-        android:id="@+id/add_phone"
-        android:title="AddPhone"
-        android:icon="@drawable/add_phone"
-        app:showAsAction="ifRoom"/>
 </menu>

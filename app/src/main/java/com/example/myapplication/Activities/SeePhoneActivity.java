@@ -1,5 +1,6 @@
 package com.example.myapplication.Activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
@@ -19,17 +20,22 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.blogspot.atifsoftwares.circularimageview.CircularImageView;
 import com.bumptech.glide.Glide;
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.model.PhoneNumber;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
@@ -41,9 +47,11 @@ import java.util.Date;
 import java.util.Objects;
 
 public class SeePhoneActivity extends AppCompatActivity {
-    private ImageView imgAvtS, imgQr;
+    private ImageView imgQr;
+    private CircularImageView imgAvtS;
     private TextView tvNameS, tvSdtS, tvMailS;
-    private Button btnTaoQr, btnLuuQr, btnZalo, btnMail;
+    private Button btnLuuQr, btnZalo;
+    private FloatingActionButton btnCall, btnChat, btnTaoQr, btnMail;
     private Bitmap bitmapQrImage;
     private ActionBar actionBar;
 
@@ -56,7 +64,7 @@ public class SeePhoneActivity extends AppCompatActivity {
         actionBar = getSupportActionBar();
         if (actionBar != null) {
             // tiêu đề
-            actionBar.setTitle("Xem chi tiết");
+            actionBar.setTitle("Phone Details");
             // hiển thị nút back (có hàm xử lý phía dưới)
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
@@ -234,5 +242,30 @@ public class SeePhoneActivity extends AppCompatActivity {
 
         // hiển thị thông báo đã được xây dựng
         notificationManager.notify(0, buider.build());
+    }
+
+    // hàm chuyển trang edit
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.edit_menu, menu);
+        MenuItem menuItemA = menu.findItem(R.id.edit_phone);
+        menuItemA.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(@NonNull MenuItem menuItem) {
+                // lấy key
+                Intent intent = getIntent();
+                Bundle data = intent.getExtras();
+                PhoneNumber pn = (PhoneNumber) data.get("pn_value");
+                // chuyển trang
+                Intent editTT=new Intent(SeePhoneActivity.this, EditActivity.class);
+                Bundle bundle=new Bundle();
+                bundle.putString("key",pn.getKey()); // gửi key qua
+                editTT.putExtras(bundle);
+                startActivity(editTT);
+                return false;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
     }
 }

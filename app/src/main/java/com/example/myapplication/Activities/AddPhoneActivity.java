@@ -80,6 +80,14 @@ public class AddPhoneActivity extends AppCompatActivity {
     private FirebaseStorage firebaseStorage=FirebaseStorage.getInstance();
     private StorageReference storageReference=firebaseStorage.getReference();
 
+    // hằng số chọn ảnh
+    private static final int IMAGE_PICK_CAMERA_CODE = 104;
+    // mảng quyền
+    private String[] cameraPermission; // chụp và lưu
+    private String[] storagePermission; // chỉ lưu
+    // variables (sẽ chứa dữ liệu để lưu trữ)
+    private Uri imageUri;
+
 
     ActivityResultLauncher scanFromImageLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), new ActivityResultCallback<Uri>() {
         @Override
@@ -123,11 +131,15 @@ public class AddPhoneActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_phone);
 
+        // mảng quyền
+        cameraPermission = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        storagePermission = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
         // lấy action bar
         actionBar = getSupportActionBar();
         if (actionBar != null) {
             // tiêu đề
-            actionBar.setTitle("Thêm liên hệ");
+            actionBar.setTitle("Add Phone");
             // hiển thị nút back (có hàm xử lý phía dưới)
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
@@ -200,10 +212,24 @@ public class AddPhoneActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0) {
                             // tạm thời chưa làm được
-                            chonAnh.launch("image/*");
+                            // Chụp ảnh mới
+                            if (!checkCameraPermission()) {
+                                // ko cấp quyền truy cập camera
+                                Toast.makeText(AddPhoneActivity.this, "Bạn chưa cấp quyền truy cập camera", Toast.LENGTH_SHORT).show();
+                            }
+                            else {
+                                pickFromCamera();
+                            }
                         } else if (which == 1) {
                             // Tải ảnh từ thư viện
-                            chonAnh.launch("image/*");
+//                            chonAnh.launch("image/*");
+                            if (!checkStoragePermission()) {
+                                // ko cho truy cập vào ảnh
+                                Toast.makeText(AddPhoneActivity.this, "Bạn chưa cấp quyền truy cập ảnh", Toast.LENGTH_SHORT).show();
+                            }
+                            else {
+                                chonAnh.launch("image/*");
+                            }
                         }
                     }
                 });
@@ -257,6 +283,60 @@ public class AddPhoneActivity extends AppCompatActivity {
             }
         });
     }
+
+    // lấy ảnh từ camera
+    private void pickFromCamera() {
+        // chọn hình ảnh từ máy ảnh, hình ảnh sẽ được trả về trong phương thức onActivityResult
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.TITLE, "Image_Title");
+        values.put(MediaStore.Images.Media.DESCRIPTION, "Image description");
+        // put image uri
+        imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+        // mở camera chụp ảnh
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        startActivityForResult(cameraIntent, IMAGE_PICK_CAMERA_CODE);
+    }
+
+    private boolean checkStoragePermission() {
+        // kiểm tra quyền
+
+        boolean readPermission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
+        boolean writePermission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
+
+        return readPermission && writePermission;
+    }
+
+    private boolean checkCameraPermission() {
+        // kiểm tra quyền camera
+
+        boolean result = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA) == (PackageManager.PERMISSION_GRANTED);
+        boolean result1 = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
+
+        return result && result1;
+    }
+
+    // xử lý kết quả trả về từ onActivityResult()
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        // ảnh được chọn từ thư viện của máy ảnh
+
+        if (resultCode == RESULT_OK) {
+            // ảnh được chọn
+            if (requestCode == IMAGE_PICK_CAMERA_CODE) {
+                // set image
+                imgTaiAnh.setImageURI(imageUri);
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     ActivityResultLauncher scanCodeFromCameraLauncher = registerForActivityResult(new ScanContract(), new ActivityResultCallback<ScanIntentResult>() {
         @Override
         public void onActivityResult(ScanIntentResult result) {
