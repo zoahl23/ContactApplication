@@ -12,8 +12,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="15dp"
         android:src="@drawable/camera"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         app:c_border="true"
         app:c_border_width="1dp"
         app:c_border_color="@color/gray"/>

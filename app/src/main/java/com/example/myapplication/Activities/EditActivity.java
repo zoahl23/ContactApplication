@@ -36,6 +36,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.blogspot.atifsoftwares.circularimageview.CircularImageView;
 import com.bumptech.glide.Glide;
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
@@ -43,6 +44,7 @@ import com.example.myapplication.model.PhoneNumber;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -61,11 +63,8 @@ import java.util.Objects;
 
 public class EditActivity extends AppCompatActivity {
     private EditText suaEdtTen, suaEdtSdt, suaEdtMail;
-    private Button btnSua;
-    private TextView tieuDeSuaTT;
-    // Ánh xạ giao diện tải ảnh lên
-    private ImageView imgDoiAnh;
-    private Button btnDoiAnh;
+    private FloatingActionButton btnSua, btnScanQrU;
+    private CircularImageView imgDoiAnh;
     private ActionBar actionBar;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     //lấy toàn bộ key của database
@@ -84,7 +83,7 @@ public class EditActivity extends AppCompatActivity {
         actionBar = getSupportActionBar();
         if (actionBar != null) {
             // tiêu đề
-            actionBar.setTitle("Sửa liên hệ");
+            actionBar.setTitle("Edit Contact");
             // hiển thị nút back (có hàm xử lý phía dưới)
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
@@ -93,9 +92,8 @@ public class EditActivity extends AppCompatActivity {
         suaEdtTen = findViewById(R.id.suaEdtTen);
         suaEdtMail = findViewById(R.id.suaEdtMail);
         btnSua = findViewById(R.id.btnSua);
+        btnScanQrU = findViewById(R.id.btnScanQrU);
         imgDoiAnh = findViewById(R.id.imgDoiAnh);
-        btnDoiAnh = findViewById(R.id.btnDoiAnh);
-        tieuDeSuaTT=findViewById(R.id.tvTieuDeSuaTT);
         Intent intent = getIntent();
         Bundle data = intent.getExtras();
         //get khóa chính của csdl để sử dụng các thông tin chính xác cho user đó
@@ -106,7 +104,6 @@ public class EditActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 PhoneNumber phoneNumber=snapshot.getValue(PhoneNumber.class);
-                tieuDeSuaTT.setText("Sửa Liên Hệ\n"+phoneNumber.getTen()+" - "+phoneNumber.getSdt());
                 suaEdtTen.setText(phoneNumber.getTen());
                 suaEdtSdt.setText(phoneNumber.getSdt());
                 suaEdtMail.setText(phoneNumber.getMail());
@@ -128,7 +125,7 @@ public class EditActivity extends AppCompatActivity {
                 }
         );
         //chọn ảnh trong album
-        btnDoiAnh.setOnClickListener(new View.OnClickListener() {
+        imgDoiAnh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 chonAnhLauncher.launch("image/*");

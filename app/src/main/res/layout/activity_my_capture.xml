@@ -8,9 +8,9 @@
 
     <!-- ImageView: Input Profile Image -->
     <com.blogspot.atifsoftwares.circularimageview.CircularImageView
-        android:id="@+id/imgAvtS"
+        android:id="@+id/imgDoiAnh"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="15dp"
         android:src="@drawable/camera"
         android:layout_width="200dp"
         android:layout_height="200dp"
@@ -18,134 +18,73 @@
         app:c_border_width="1dp"
         app:c_border_color="@color/gray"/>
 
-    <!-- TextView: Name -->
-    <TextView
-        android:id="@+id/tvNameS"
-        android:layout_below="@id/imgAvtS"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:text="Nguyễn Văn A"
-        android:textColor="@color/black"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        android:layout_centerHorizontal="true"/>
-    <!-- TextView: Phone -->
-    <TextView
-        android:id="@+id/tvSdtS"
-        android:layout_below="@id/tvNameS"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:text="0123456789"
-        android:textColor="@color/black"
+    <!-- EditText: Input User Name -->
+    <EditText
+        android:id="@+id/suaEdtTen"
+        android:inputType="textPersonName|textCapWords"
+        android:hint="Họ và tên"
+        android:layout_below="@id/imgDoiAnh"
+        android:background="@drawable/shape_rectangle"
+        android:padding="10dp"
         android:textSize="20sp"
-        android:textStyle="italic"
-        android:layout_centerHorizontal="true"/>
-    <!-- TextView: Phone -->
-    <TextView
-        android:id="@+id/tvMailS"
-        android:layout_below="@id/tvSdtS"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="15dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:text="nguyenvana@gmail.com"
-        android:textColor="@color/black"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <!-- EditText: Input User Phone -->
+    <EditText
+        android:id="@+id/suaEdtSdt"
+        android:inputType="phone"
+        android:hint="Số điện thoại"
+        android:layout_below="@+id/suaEdtTen"
+        android:background="@drawable/shape_rectangle"
+        android:padding="10dp"
         android:textSize="20sp"
-        android:textStyle="italic"
-        android:layout_centerHorizontal="true"/>
-    <LinearLayout
-        android:id="@+id/hang"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tvMailS"
-        android:orientation="horizontal"
-        android:gravity="center">
-
-        <!-- FAB: Button Call -->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnCall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="20dp"
-            android:src="@drawable/ic_call_white"/>
-        <!-- FAB: Button Chat -->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnChat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="20dp"
-            android:src="@drawable/ic_chat_white"/>
-        <!-- FAB: Button QR -->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnTaoQr"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="20dp"
-            android:src="@drawable/ic_qr_white"/>
-        <!-- FAB: Button Mail -->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnMail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="20dp"
-            android:src="@drawable/ic_mail_white"/>
-
-    </LinearLayout>
-    <!-- Image QR -->
-    <ImageView
-        android:id="@+id/imgQr"
-        android:layout_below="@id/hang"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_centerHorizontal="true"/>
-
-    <LinearLayout
+        android:layout_height="wrap_content"/>
+    <!-- EditText: Input User Email -->
+    <EditText
+        android:id="@+id/suaEdtMail"
+        android:inputType="textEmailAddress"
+        android:hint="Email"
+        android:textSize="20sp"
+        android:layout_below="@+id/suaEdtSdt"
+        android:background="@drawable/shape_rectangle"
+        android:padding="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <!-- FAB: Update Contact -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnSua"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp">
-
-        <!-- Button Zalo -->
-        <Button
-            android:id="@+id/btnZalo"
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="20dp"
-            android:background="@drawable/shape_button"
-            android:text="Tìm trên Zalo" />
-
-        <!-- Button Save Qr -->
-        <Button
-            android:id="@+id/btnLuuQr"
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/shape_button"
-            android:text="Lưu ảnh QR" />
-
-    </LinearLayout>
+        android:layout_marginBottom="20dp"
+        android:src="@drawable/ic_done_white" />
+    <!-- FAB: Button Scan QR -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnScanQr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:src="@drawable/ic_scan_white"/>
 
 </RelativeLayout>
