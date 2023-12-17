@@ -36,6 +36,13 @@ import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.model.PhoneNumber;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
@@ -54,6 +61,13 @@ public class SeePhoneActivity extends AppCompatActivity {
     private FloatingActionButton btnCall, btnChat, btnTaoQr, btnMail;
     private Bitmap bitmapQrImage;
     private ActionBar actionBar;
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    //lấy toàn bộ key của database
+    private DatabaseReference get_key = database.getReference();
+    //trỏ vào key cụ thể ở đây là key contact để lấy data trong key đó
+    private DatabaseReference contactsRef=get_key.child("contact");
+    private FirebaseStorage firebaseStorage=FirebaseStorage.getInstance();
+    private StorageReference storageReference=firebaseStorage.getReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,15 +90,24 @@ public class SeePhoneActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         Bundle data = intent.getExtras();
-        PhoneNumber pn = (PhoneNumber) data.get("pn_value");
+        //get khóa chính của csdl để sử dụng các thông tin chính xác cho user đó
+        String key=data.getString("key");
 
-        // lấy địa chỉ ảnh trên firebase = "http://...." kiểu vậy
-        String imageUri = String.valueOf(pn.getAvt());
-        // hiển thị ảnh
-        Glide.with(this).load(imageUri).into(imgAvtS);
-        tvNameS.setText(pn.getTen());
-        tvSdtS.setText(pn.getSdt());
-        tvMailS.setText(pn.getMail());
+        contactsRef.child(key).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                PhoneNumber phoneNumber=snapshot.getValue(PhoneNumber.class);
+                tvNameS.setText(phoneNumber.getTen());
+                tvSdtS.setText(phoneNumber.getSdt());
+                tvMailS.setText(phoneNumber.getMail());
+                Glide.with(getBaseContext()).load(phoneNumber.getAvt()).into(imgAvtS);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
         btnLuuQr = findViewById(R.id.btnLuuQr);
         btnTaoQr = findViewById(R.id.btnTaoQr);
@@ -95,58 +118,87 @@ public class SeePhoneActivity extends AppCompatActivity {
         btnTaoQr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (pn.getSdt().length() > 0) {
-                    MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
-                    try {
-                        BitMatrix bitMatrix = multiFormatWriter.encode(pn.getSdt(), BarcodeFormat.QR_CODE, 150, 150);
-                        BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-                        bitmapQrImage = barcodeEncoder.createBitmap(bitMatrix);
-                        imgQr.setImageBitmap(bitmapQrImage);
-                    } catch (Exception e) {
-                        Log.d("Lỗi tạo QR: ", e.toString());
-                        Toast.makeText(SeePhoneActivity.this, "Lỗi tạo QR: " + e.toString(), Toast.LENGTH_SHORT).show();
+                contactsRef.child(key).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        PhoneNumber pn = snapshot.getValue(PhoneNumber.class);
+                        if (pn.getSdt().length() > 0) {
+                            MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
+                            try {
+                                BitMatrix bitMatrix = multiFormatWriter.encode(pn.getSdt(), BarcodeFormat.QR_CODE, 150, 150);
+                                BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+                                bitmapQrImage = barcodeEncoder.createBitmap(bitMatrix);
+                                imgQr.setImageBitmap(bitmapQrImage);
+                            } catch (Exception e) {
+                                Log.d("Lỗi tạo QR: ", e.toString());
+                                Toast.makeText(SeePhoneActivity.this, "Lỗi tạo QR: " + e.toString(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
                     }
-                }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
             }
         });
 
         btnMail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intentMail = new Intent(Intent.ACTION_SEND);
-//                intentMail.putExtra(Intent.EXTRA_EMAIL, pn.getMail());
-                intentMail.putExtra(Intent.EXTRA_EMAIL, new String[]{pn.getMail()});
-//                intentMail.setData( Uri.parse("mailto:" + pn.getMail()));
-                intentMail.putExtra(Intent.EXTRA_SUBJECT, "huhu");
-                intentMail.putExtra(Intent.EXTRA_TEXT, "hihi");
-                intentMail.setType("message/rfc822");
-                Log.d("mail", pn.getMail());
-                // cho chọn ứng dụng mail muốn dùng
-//                startActivity(Intent.createChooser(intentMail, "Choose email client"));
-                startActivity(intentMail);
+                contactsRef.child(key).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        PhoneNumber pn = snapshot.getValue(PhoneNumber.class);
+                        Intent intentMail = new Intent(Intent.ACTION_SEND);
+                        intentMail.putExtra(Intent.EXTRA_EMAIL, new String[]{pn.getMail()});
+                        intentMail.putExtra(Intent.EXTRA_SUBJECT, "huhu");
+                        intentMail.putExtra(Intent.EXTRA_TEXT, "hihi");
+                        intentMail.setType("message/rfc822");
+                        Log.d("mail", pn.getMail());
+                        startActivity(intentMail);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
             }
         });
 
         btnZalo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intentZalo = new Intent();
-                intentZalo.setAction(Intent.ACTION_SEND);
-                intentZalo.setType("text/plain");
-                intentZalo.putExtra(Intent.EXTRA_TEXT, pn.getSdt());
-                intentZalo.setPackage("com.zing.zalo");
+                contactsRef.child(key).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        PhoneNumber pn = snapshot.getValue(PhoneNumber.class);
+                        Intent intentZalo = new Intent();
+                        intentZalo.setAction(Intent.ACTION_SEND);
+                        intentZalo.setType("text/plain");
+                        intentZalo.putExtra(Intent.EXTRA_TEXT, pn.getSdt());
+                        intentZalo.setPackage("com.zing.zalo");
 
-                Log.d("zalo", String.valueOf(intentZalo));
+                        Log.d("zalo", String.valueOf(intentZalo));
 
-                // Kiểm tra xem có ứng dụng Zalo đã được cài đặt hay chưa
-                if (intentZalo.resolveActivity(getPackageManager()) != null) {
-                    startActivity(intentZalo);
-                } else {
-                    // intentZalo.setData(Uri.parse("https://zalo.me/"));
-                    // thông báo cho người dùng
-                    Toast.makeText(getApplicationContext(), "Ứng dụng Zalo chưa được cài đặt", Toast.LENGTH_SHORT).show();
-                    makeNotification("Lỗi", "Ứng dụng Zalo chưa được cài đặt");
-                }
+                        // Kiểm tra xem có ứng dụng Zalo đã được cài đặt hay chưa
+                        if (intentZalo.resolveActivity(getPackageManager()) != null) {
+                            startActivity(intentZalo);
+                        } else {
+                            // intentZalo.setData(Uri.parse("https://zalo.me/"));
+                            // thông báo cho người dùng
+                            Toast.makeText(getApplicationContext(), "Ứng dụng Zalo chưa được cài đặt", Toast.LENGTH_SHORT).show();
+                            makeNotification("Lỗi", "Ứng dụng Zalo chưa được cài đặt");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
             }
         });
 
@@ -254,13 +306,17 @@ public class SeePhoneActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(@NonNull MenuItem menuItem) {
                 // lấy key
+//                Intent intent = getIntent();
+//                Bundle data = intent.getExtras();
+//                PhoneNumber pn = (PhoneNumber) data.get("pn_value");
                 Intent intent = getIntent();
                 Bundle data = intent.getExtras();
-                PhoneNumber pn = (PhoneNumber) data.get("pn_value");
+                //get khóa chính của csdl để sử dụng các thông tin chính xác cho user đó
+                String key =data.getString("key");
                 // chuyển trang
                 Intent editTT=new Intent(SeePhoneActivity.this, EditActivity.class);
                 Bundle bundle=new Bundle();
-                bundle.putString("key",pn.getKey()); // gửi key qua
+                bundle.putString("key",key ); // gửi key qua pn.getKey()
                 editTT.putExtras(bundle);
                 startActivity(editTT);
                 return false;

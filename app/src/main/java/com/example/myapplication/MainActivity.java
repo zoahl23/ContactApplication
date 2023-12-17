@@ -42,6 +42,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private ListView lvPhoneNumber;
@@ -81,13 +84,30 @@ public class MainActivity extends AppCompatActivity {
         lvPhoneNumber.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent xemChiTietIntent = new Intent(MainActivity.this, SeePhoneActivity.class);
-                Bundle data = new Bundle();
-                PhoneNumber pn = listPN.get(i);
-                data.putSerializable("pn_value", pn);
-                xemChiTietIntent.putExtras(data);
-                startActivity(xemChiTietIntent);
-                Toast.makeText(MainActivity.this, listPN.get(i).getTen(), Toast.LENGTH_SHORT).show();
+                // Lấy vị trí của item được nhấp vào
+//                int position = adapterView.getPositionForView(view);
+
+                // Gửi intent đến SeePhoneActivity với key
+//                Intent xemChiTietIntent = new Intent(MainActivity.this, SeePhoneActivity.class);
+//                xemChiTietIntent.putExtra("key", listPN.get(position).getKey());
+//                startActivity(xemChiTietIntent);
+//                Toast.makeText(MainActivity.this, listPN.get(i).getTen(), Toast.LENGTH_SHORT).show();
+                Intent xemChiTietIntent = new Intent(getBaseContext(), SeePhoneActivity.class);
+                //hàm getData_test đươc tạo ở trong phần PhoneAdapter.java
+                if(adapterPN.getData_test().length()>0){
+                    for(int p=0;p<listPN.size();p++){
+                        if(listPN.get(p).getTen().contains(adapterPN.getData_test())){
+                            xemChiTietIntent.putExtra("key", listPN.get(p).getKey());
+                            startActivity(xemChiTietIntent);
+                            Toast.makeText(MainActivity.this, "p", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+                else{
+                    xemChiTietIntent.putExtra("key", listPN.get(i).getKey());
+                    startActivity(xemChiTietIntent);
+                    Toast.makeText(MainActivity.this, "i", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -97,34 +117,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, AddPhoneActivity.class));
             }
         });
-
-        //  ======= code này lấy ở file 30/10 trên drive Linh up =======
-
-//        lvPhoneNumber.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                Intent xemChiTietIntent = new Intent(getBaseContext(), SeePhoneActivity.class);
-//                Bundle data = new Bundle();
-//                //hàm getData_test đươc tạo ở trong phần PhoneAdapter.java
-//                if(adapterPN.getData_test().length()>0){
-//                    for(int p=0;p<listPN.size();p++){
-//                        if(listPN.get(p).getTen().contains(adapterPN.getData_test())){
-//                            data.putSerializable("pn_value", listPN.get(p));
-//                            xemChiTietIntent.putExtras(data);
-//                            startActivity(xemChiTietIntent);
-//                            Toast.makeText(MainActivity.this, listPN.get(p).getTen(), Toast.LENGTH_SHORT).show();
-//                        }
-//                    }
-//                }
-//                else{
-//                    PhoneNumber pn = listPN.get(i);
-//                    data.putSerializable("pn_value", pn);
-//                    xemChiTietIntent.putExtras(data);
-//                    startActivity(xemChiTietIntent);
-//                    Toast.makeText(MainActivity.this, listPN.get(i).getTen(), Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
 
     }
     //lấy data trong cơ sở dữ liệu rồi add vào list PN
@@ -252,6 +244,38 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String s) {
                 adapterPN.getFilter().filter(s);
+                return false;
+            }
+        });
+        MenuItem menuItemS = menu.findItem(R.id.sort_bar);
+        menuItemS.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(@NonNull MenuItem menuItem) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("Sắp xếp theo");
+                String[] options = {"Tên liên lạc", "Số điện thoại", "Gmail"};
+
+                builder.setItems(options, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (which == 0) {
+                            // Xếp theo tên tăng dần
+
+                        }
+                        else if (which == 1) {
+                            // Xếp theo số điện thoại tăng dần
+
+                        }
+                        else if (which == 2) {
+                            // Xếp theo Mail
+
+                        }
+                    }
+                });
+
+                builder.show();
+
+
                 return false;
             }
         });
