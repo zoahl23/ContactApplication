@@ -113,7 +113,53 @@ public class SeePhoneActivity extends AppCompatActivity {
         btnTaoQr = findViewById(R.id.btnTaoQr);
         btnZalo = findViewById(R.id.btnZalo);
         btnMail = findViewById(R.id.btnMail);
+        btnCall = findViewById(R.id.btnCall);
+        btnChat = findViewById(R.id.btnChat);
         imgQr = findViewById(R.id.imgQr);
+
+        btnChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                contactsRef.child(key).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        PhoneNumber pn = snapshot.getValue(PhoneNumber.class);
+                        Uri smsURI=Uri.parse("smsto: "+ pn.getSdt());
+                        Intent nhanTin= new Intent(Intent.ACTION_SENDTO, smsURI);
+                        startActivity(nhanTin);
+                        Toast.makeText(SeePhoneActivity.this,"Nhắn tin tới số: "+ pn.getSdt(),
+                                Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }
+        });
+
+        btnCall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                contactsRef.child(key).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        PhoneNumber pn = snapshot.getValue(PhoneNumber.class);
+                        Uri phoneURI=Uri.parse("tel: "+ pn.getSdt());
+                        Intent goiDienThoai=new Intent(Intent.ACTION_DIAL,phoneURI);
+                        startActivity(goiDienThoai);
+                        Toast.makeText(SeePhoneActivity.this,"Gọi Tới Số: "+ pn.getSdt(),
+                                Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }
+        });
 
         btnTaoQr.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -153,8 +199,8 @@ public class SeePhoneActivity extends AppCompatActivity {
                         PhoneNumber pn = snapshot.getValue(PhoneNumber.class);
                         Intent intentMail = new Intent(Intent.ACTION_SEND);
                         intentMail.putExtra(Intent.EXTRA_EMAIL, new String[]{pn.getMail()});
-                        intentMail.putExtra(Intent.EXTRA_SUBJECT, "huhu");
-                        intentMail.putExtra(Intent.EXTRA_TEXT, "hihi");
+                        intentMail.putExtra(Intent.EXTRA_SUBJECT, "Gửi Mail từ App Contact");
+                        //intentMail.putExtra(Intent.EXTRA_TEXT, "hihi");
                         intentMail.setType("message/rfc822");
                         Log.d("mail", pn.getMail());
                         startActivity(intentMail);

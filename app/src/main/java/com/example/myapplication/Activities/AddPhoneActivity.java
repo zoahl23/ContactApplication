@@ -65,6 +65,7 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 public class AddPhoneActivity extends AppCompatActivity {
     private EditText addEdtTen, addEdtSdt, addEdtMail;
@@ -243,7 +244,18 @@ public class AddPhoneActivity extends AppCompatActivity {
                 String ten = addEdtTen.getText().toString().trim();
                 String sdt = addEdtSdt.getText().toString().trim();
                 String mail = addEdtMail.getText().toString().trim();
-                if(ten.length()>0 && sdt.length()>0 && mail.length()>0){
+                // Kiểm tra chuỗi email
+                String emailPattern = "^[^\\s@]+@[^\\s@]+\\.com$";
+                if (ten.length() == 0) {
+                    Toast.makeText(AddPhoneActivity.this, "Vui lòng nhập tên", Toast.LENGTH_SHORT).show();
+                }
+                else if (sdt.length() != 10 || !sdt.startsWith("0")) {
+                    Toast.makeText(AddPhoneActivity.this, "Số điện thoại không hợp lệ", Toast.LENGTH_SHORT).show();
+                }
+                else if (!Pattern.matches(emailPattern, mail)) {
+                    Toast.makeText(AddPhoneActivity.this, "Mail không hợp lệ", Toast.LENGTH_SHORT).show();
+                }
+                else {
                     //tạo ra 1 khóa chính ngẫu nhiên cho từng user nhưng phải xóa các kí tự đặc biệt vì firebase k cho phép
                     String key=contactsRef.push().getKey().toString().replace("-", "");
                     PhoneNumber phoneNumber=new PhoneNumber(key,ten,sdt,"",mail);
@@ -255,31 +267,35 @@ public class AddPhoneActivity extends AppCompatActivity {
                     ByteArrayOutputStream baoStream= new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.JPEG,100,baoStream);
                     byte[] imageData=baoStream.toByteArray();
-                    anhDaiDienRef.putBytes(imageData).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            anhDaiDienRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-                                    String anhDaiDien=uri.toString();
-                                    //vì key tên số điện thoại đã được add sẵn ở trên nên ở đây mình chỉ cần add link ảnh là sẽ tự động lưu toàn bộ data của user lên firebase
-                                    phoneNumber.setAvt(anhDaiDien);
-                                    contactsRef.child(key).setValue(phoneNumber).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if(task.isSuccessful()){
-                                                Toast.makeText(AddPhoneActivity.this,"Thêm Liên Hệ Thành Công!",Toast.LENGTH_SHORT).show();
-                                                makeNotification("Thông báo", "Bạn vừa thêm thành công một liên hệ mới");
+                    if (bitmap == null) {
+                        Toast.makeText(AddPhoneActivity.this, "Bạn chưa tải ảnh lên", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        anhDaiDienRef.putBytes(imageData).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                anhDaiDienRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        String anhDaiDien=uri.toString();
+                                        //vì key tên số điện thoại đã được add sẵn ở trên nên ở đây mình chỉ cần add link ảnh là sẽ tự động lưu toàn bộ data của user lên firebase
+                                        phoneNumber.setAvt(anhDaiDien);
+                                        contactsRef.child(key).setValue(phoneNumber).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if(task.isSuccessful()){
+                                                    Toast.makeText(AddPhoneActivity.this,"Thêm Liên Hệ Thành Công!",Toast.LENGTH_SHORT).show();
+                                                    makeNotification("Thông báo", "Bạn vừa thêm thành công một liên hệ mới");
+                                                }
                                             }
-                                        }
-                                    });
-                                }
-                            });
-                            finish();
-                        }
-                    });
+                                        });
+                                    }
+                                });
+                                finish();
+                            }
+                        });
+                    }
                 }
-
             }
         });
     }
