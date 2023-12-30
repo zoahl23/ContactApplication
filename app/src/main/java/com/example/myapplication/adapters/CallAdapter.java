@@ -1,17 +1,28 @@
 package com.example.myapplication.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.icu.text.SimpleDateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.model.CallHistory;
+import com.example.myapplication.model.PhoneNumber;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CallAdapter extends BaseAdapter {
@@ -54,8 +65,6 @@ public class CallAdapter extends BaseAdapter {
 
         CallHistory callHistory = callHistoryData.get(position);
 
-        // TODO: Lấy dữ liệu lịch sử cuộc gọi từ Firebase sử dụng databaseReference
-
         // Đặt số điện thoại
         TextView numberView = view.findViewById(R.id.number);
         numberView.setText(callHistory.getNumber());
@@ -66,14 +75,12 @@ public class CallAdapter extends BaseAdapter {
 
         // Đặt timestamp
         TextView timestampView = view.findViewById(R.id.timestamp);
-        timestampView.setText(new SimpleDateFormat("hh:mm:ss").format(callHistory.getTimestamp()));
+        timestampView.setText(callHistory.getTimestamp());
 
         // Đặt thời lượng
         TextView durationView = view.findViewById(R.id.duration);
-        durationView.setText(String.format("%d giây", callHistory.getDuration()));
+        durationView.setText(String.format("00:00:%d", callHistory.getDuration()));
 
         return view;
     }
-
-
 }

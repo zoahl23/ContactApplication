@@ -6,12 +6,12 @@ import java.io.Serializable;
 public class CallHistory implements Serializable {
     private String number;
     private String type;
-    private long timestamp;
-    private int duration;
+    private String timestamp;
+    private String duration;
 
     public CallHistory() {}
 
-    public CallHistory(String number, String type, long timestamp, int duration) {
+    public CallHistory(String number, String type, String timestamp, String duration) {
         this.number = number;
         this.type = type;
         this.timestamp = timestamp;
@@ -34,19 +34,19 @@ public class CallHistory implements Serializable {
         this.type = type;
     }
 
-    public long getTimestamp() {
+    public String getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(long timestamp) {
+    public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
 
-    public int getDuration() {
+    public String getDuration() {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(String duration) {
         this.duration = duration;
     }
 }
