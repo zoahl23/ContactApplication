@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardElevation="1dp"
+    app:cardUseCompatPadding="true"
+    app:contentPadding="5dp"
+    app:cardBackgroundColor="@color/white">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/dautien"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <!-- Type -->
+            <com.blogspot.atifsoftwares.circularimageview.CircularImageView
+                android:id="@+id/type"
+                android:src="@drawable/baseline_call_to_made_24"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="10dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"/>
+
+            <!-- Number -->
+            <TextView
+                android:id="@+id/number"
+                android:text="0123456789"
+                android:textColor="#919090"
+                android:textSize="20sp"
+                android:textStyle="italic"
+                android:gravity="center_vertical"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"/>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_centerVertical="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/dautien"
+            android:layout_toRightOf="@+id/dautien"
+            android:orientation="vertical">
+
+            <!-- Date -->
+            <TextView
+                android:id="@+id/timestamp"
+                android:text="8 minutes ago"
+                android:textColor="#919090"
+                android:textAlignment="textEnd"
+                android:textSize="14sp"
+                android:layout_marginTop="3dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <!-- Duration -->
+            <TextView
+                android:id="@+id/duration"
+                android:text="00:00:00"
+                android:textColor="#919090"
+                android:textAlignment="textEnd"
+                android:textSize="14sp"
+                android:layout_marginBottom="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

@@ -116,8 +116,8 @@
     <ImageView
         android:id="@+id/imgQr"
         android:layout_below="@id/hang"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_centerHorizontal="true"/>
 
     <LinearLayout
@@ -140,13 +140,13 @@
             android:background="@drawable/shape_button"
             android:text="Tìm trên Zalo" />
 
-        <!-- Button Save Qr -->
+        <!-- Button Details Call -->
         <Button
-            android:id="@+id/btnLuuQr"
+            android:id="@+id/btnCallLog"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_button"
-            android:text="Lưu ảnh QR" />
+            android:text="Xem lịch sử" />
 
     </LinearLayout>
 

@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <!--   Thông báo     -->
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <!-- SMS -->
+    <!-- Thông báo -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" /> <!-- SMS -->
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- History Call -->
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
 
     <uses-feature
         android:name="android.hardware.camera"
-        android:required="true" />
+        />
     <uses-feature
         android:name="android.hardware.camera.any"
         android:required="true" />
@@ -19,24 +20,17 @@
 
     <uses-permission
         android:name="android.permission.CAMERA"
-        android:required="true"
-        android:requiredFeature="true" />
-    <!-- Email -->
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
-    <!-- SMS -->
+        /> <!-- Email -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" /> <!-- SMS -->
     <uses-feature
         android:name="android.hardware.telephony"
         android:required="false" />
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <!-- Zalo -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- Zalo -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
-<!--            android:icon="@mipmap/ic_launcher"
-@mipmap/ic_launcher_round
--->
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -47,6 +41,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication"
         tools:targetApi="31">
+        <activity
+            android:name=".Activities.ListCallActivity"
+            android:exported="false" />
         <activity
             android:name=".SplashScreenActivity"
             android:exported="true">
@@ -70,7 +67,7 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="false"></activity> <!-- true -->
+            android:exported="false" /> <!-- true -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.myapplication.fileprovider"

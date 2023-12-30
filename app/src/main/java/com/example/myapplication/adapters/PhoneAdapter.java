@@ -44,6 +44,9 @@ public class PhoneAdapter extends ArrayAdapter implements Filterable {
     public ArrayList<PhoneNumber> getListPN() {
         return listPN;
     }
+    public ArrayList<PhoneNumber> getListPNFilter() {
+        return listPNFilter;
+    }
     @NonNull
     //hàm này xử lý lệnh tìm kiếm được sử dụng trong MainActivity
     @Override
@@ -52,6 +55,7 @@ public class PhoneAdapter extends ArrayAdapter implements Filterable {
             @Override
             protected FilterResults performFiltering(CharSequence charSequence) {
                 String s = charSequence.toString().toLowerCase().trim();
+                data_test=s;
                 if (s.length() < 0) {
                     listPNFilter = listPNBack;
                 }

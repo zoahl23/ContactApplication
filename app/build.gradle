@@ -28,10 +28,17 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    // photo view
+    viewBinding {
+        enabled = true
+    }
 }
 
 dependencies {
 
+    //photo view
+    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
     // circular view
     implementation 'com.github.AtifSayings:CircularImageView:1.0.2'
     // thêm 3 thư viên này

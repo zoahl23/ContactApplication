@@ -1,5 +1,7 @@
 package com.example.myapplication.Activities;
 
+import static android.Manifest.permission.CAMERA;
+
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -8,9 +10,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -21,6 +26,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -87,6 +93,8 @@ public class EditActivity extends AppCompatActivity {
     private DatabaseReference contactsRef=get_key.child("contact");
     private FirebaseStorage firebaseStorage=FirebaseStorage.getInstance();
     private StorageReference storageReference=firebaseStorage.getReference();
+
+    private static final int CAMERA_REQUEST = 1;
 
     ActivityResultLauncher scanFromImageLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), new ActivityResultCallback<Uri>() {
         @Override
@@ -203,7 +211,49 @@ public class EditActivity extends AppCompatActivity {
         imgDoiAnh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                chonAnhLauncher.launch("image/*");
+                AlertDialog.Builder builder = new AlertDialog.Builder(EditActivity.this);
+                builder.setTitle("Chọn ảnh");
+
+                String[] options = {"Chụp ảnh mới", "Tải ảnh lên"};
+
+                builder.setItems(options, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (which == 0) {
+                            // tạm thời chưa làm được
+                            // Chụp ảnh mới
+                            if(ContextCompat.checkSelfPermission(getApplicationContext(), CAMERA) == PackageManager.PERMISSION_GRANTED){
+                                //permisson granted
+                                //continue the action
+                                Intent cameraItent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                startActivityForResult(cameraItent, CAMERA_REQUEST);
+                            }else {
+                                //permession not granted
+                                // ask for the permisson
+                                ActivityCompat.requestPermissions(EditActivity.this, new String[]{CAMERA}, 1);
+//                                Toast.makeText(AddPhoneActivity.this, "Bạn chưa cấp quyền truy cập camera", Toast.LENGTH_SHORT).show();
+                            }
+//                            if (!checkCameraPermission()) {
+//                                // ko cấp quyền truy cập camera
+//                            }
+//                            else {
+//                                pickFromCamera();
+//                            }
+                        } else if (which == 1) {
+                            // Tải ảnh từ thư viện
+//                            chonAnh.launch("image/*");
+                            if (!checkStoragePermission()) {
+                                // ko cho truy cập vào ảnh
+                                Toast.makeText(EditActivity.this, "Bạn chưa cấp quyền truy cập ảnh", Toast.LENGTH_SHORT).show();
+                            }
+                            else {
+                                chonAnhLauncher.launch("image/*");
+                            }
+                        }
+                    }
+                });
+
+                builder.show();
             }
         });
 
@@ -290,6 +340,34 @@ public class EditActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private boolean checkStoragePermission() {
+        // kiểm tra quyền
+
+        boolean readPermission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
+        boolean writePermission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
+
+        return readPermission && writePermission;
+    }
+
+    // xử lý kết quả trả về từ onActivityResult()
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // ảnh được chọn từ thư viện của máy ảnh
+
+        if (resultCode == RESULT_OK) {
+            // ảnh được chọn
+            if (requestCode == CAMERA_REQUEST) {
+                // set image
+                Bitmap photo = (Bitmap) data.getExtras().get("data");
+                imgDoiAnh.setImageBitmap(photo);
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     // xử lý nút back trên actionBar

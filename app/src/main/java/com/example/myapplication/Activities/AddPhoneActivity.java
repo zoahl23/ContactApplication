@@ -1,5 +1,7 @@
 package com.example.myapplication.Activities;
 
+import static android.Manifest.permission.CAMERA;
+
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -13,6 +15,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -45,8 +48,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -82,7 +88,8 @@ public class AddPhoneActivity extends AppCompatActivity {
     private StorageReference storageReference=firebaseStorage.getReference();
 
     // hằng số chọn ảnh
-    private static final int IMAGE_PICK_CAMERA_CODE = 104;
+//    private static final int IMAGE_PICK_CAMERA_CODE = 104;
+    private static final int CAMERA_REQUEST = 1;
     // mảng quyền
     private String[] cameraPermission; // chụp và lưu
     private String[] storagePermission; // chỉ lưu
@@ -133,7 +140,7 @@ public class AddPhoneActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_phone);
 
         // mảng quyền
-        cameraPermission = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        cameraPermission = new String[]{CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         storagePermission = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
         // lấy action bar
@@ -214,13 +221,23 @@ public class AddPhoneActivity extends AppCompatActivity {
                         if (which == 0) {
                             // tạm thời chưa làm được
                             // Chụp ảnh mới
-                            if (!checkCameraPermission()) {
-                                // ko cấp quyền truy cập camera
-                                Toast.makeText(AddPhoneActivity.this, "Bạn chưa cấp quyền truy cập camera", Toast.LENGTH_SHORT).show();
+                            if(ContextCompat.checkSelfPermission(getApplicationContext(), CAMERA) == PackageManager.PERMISSION_GRANTED){
+                                //permisson granted
+                                //continue the action
+                                Intent cameraItent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                startActivityForResult(cameraItent, CAMERA_REQUEST);
+                            }else {
+                                //permession not granted
+                                // ask for the permisson
+                                ActivityCompat.requestPermissions(AddPhoneActivity.this, new String[]{CAMERA}, 1);
+//                                Toast.makeText(AddPhoneActivity.this, "Bạn chưa cấp quyền truy cập camera", Toast.LENGTH_SHORT).show();
                             }
-                            else {
-                                pickFromCamera();
-                            }
+//                            if (!checkCameraPermission()) {
+//                                // ko cấp quyền truy cập camera
+//                            }
+//                            else {
+//                                pickFromCamera();
+//                            }
                         } else if (which == 1) {
                             // Tải ảnh từ thư viện
 //                            chonAnh.launch("image/*");
@@ -256,64 +273,99 @@ public class AddPhoneActivity extends AppCompatActivity {
                     Toast.makeText(AddPhoneActivity.this, "Mail không hợp lệ", Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    //tạo ra 1 khóa chính ngẫu nhiên cho từng user nhưng phải xóa các kí tự đặc biệt vì firebase k cho phép
-                    String key=contactsRef.push().getKey().toString().replace("-", "");
-                    PhoneNumber phoneNumber=new PhoneNumber(key,ten,sdt,"",mail);
-                    //đặt tên ảnh trùng với key
-                    StorageReference anhDaiDienRef=storageReference.child("avt").child(key + ".jpg");
-                    //từ đoạn này là nén ảnh để đẩy lên trên firebase
-                    BitmapDrawable bitmapDrawable=(BitmapDrawable) imgTaiAnh.getDrawable();
-                    Bitmap bitmap=bitmapDrawable.getBitmap();
-                    ByteArrayOutputStream baoStream= new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG,100,baoStream);
-                    byte[] imageData=baoStream.toByteArray();
-                    if (bitmap == null) {
-                        Toast.makeText(AddPhoneActivity.this, "Bạn chưa tải ảnh lên", Toast.LENGTH_SHORT).show();
-                    }
-                    else {
-                        anhDaiDienRef.putBytes(imageData).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                anhDaiDienRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                    @Override
-                                    public void onSuccess(Uri uri) {
-                                        String anhDaiDien=uri.toString();
-                                        //vì key tên số điện thoại đã được add sẵn ở trên nên ở đây mình chỉ cần add link ảnh là sẽ tự động lưu toàn bộ data của user lên firebase
-                                        phoneNumber.setAvt(anhDaiDien);
-                                        contactsRef.child(key).setValue(phoneNumber).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if(task.isSuccessful()){
-                                                    Toast.makeText(AddPhoneActivity.this,"Thêm Liên Hệ Thành Công!",Toast.LENGTH_SHORT).show();
-                                                    makeNotification("Thông báo", "Bạn vừa thêm thành công một liên hệ mới");
+                    // Kiểm tra xem số điện thoại đã tồn tại chưa
+                    contactsRef.orderByChild("sdt").equalTo(sdt).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                // Số điện thoại đã tồn tại
+                                Toast.makeText(AddPhoneActivity.this, "Số điện thoại đã tồn tại", Toast.LENGTH_SHORT).show();
+                            } else {
+                                // Số điện thoại chưa tồn tại, tiếp tục thêm vào dữ liệu
+                                // tạo ra 1 khóa chính ngẫu nhiên cho từng user nhưng phải xóa các kí tự đặc biệt vì firebase k cho phép
+                                String key=contactsRef.push().getKey().toString().replace("-", "");
+                                PhoneNumber phoneNumber=new PhoneNumber(key,ten,sdt,"",mail);
+                                //đặt tên ảnh trùng với key
+                                StorageReference anhDaiDienRef=storageReference.child("avt").child(key + ".jpg");
+                                //từ đoạn này là nén ảnh để đẩy lên trên firebase
+                                BitmapDrawable bitmapDrawable=(BitmapDrawable) imgTaiAnh.getDrawable();
+                                Bitmap bitmap=bitmapDrawable.getBitmap();
+                                ByteArrayOutputStream baoStream= new ByteArrayOutputStream();
+                                bitmap.compress(Bitmap.CompressFormat.JPEG,100,baoStream);
+                                byte[] imageData=baoStream.toByteArray();
+                                if (bitmap == null) {
+                                    Toast.makeText(AddPhoneActivity.this, "Bạn chưa tải ảnh lên", Toast.LENGTH_SHORT).show();
+                                }
+                                else {
+                                    anhDaiDienRef.putBytes(imageData).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                        @Override
+                                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                            anhDaiDienRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                @Override
+                                                public void onSuccess(Uri uri) {
+                                                    String anhDaiDien=uri.toString();
+                                                    //vì key tên số điện thoại đã được add sẵn ở trên nên ở đây mình chỉ cần add link ảnh là sẽ tự động lưu toàn bộ data của user lên firebase
+                                                    phoneNumber.setAvt(anhDaiDien);
+                                                    contactsRef.child(key).setValue(phoneNumber).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                            if(task.isSuccessful()){
+                                                                Toast.makeText(AddPhoneActivity.this,"Thêm Liên Hệ Thành Công!",Toast.LENGTH_SHORT).show();
+                                                                makeNotification("Thông báo", "Bạn vừa thêm thành công một liên hệ mới");
+                                                            }
+                                                        }
+                                                    });
                                                 }
-                                            }
-                                        });
-                                    }
-                                });
-                                finish();
+                                            });
+                                            finish();
+                                        }
+                                    });
+                                }
                             }
-                        });
-                    }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            // Xử lý khi có lỗi xảy ra trong quá trình kiểm tra
+                            Toast.makeText(AddPhoneActivity.this, "Lỗi khi kiểm tra số điện thoại", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             }
         });
     }
 
-    // lấy ảnh từ camera
-    private void pickFromCamera() {
-        // chọn hình ảnh từ máy ảnh, hình ảnh sẽ được trả về trong phương thức onActivityResult
-        ContentValues values = new ContentValues();
-        values.put(MediaStore.Images.Media.TITLE, "Image_Title");
-        values.put(MediaStore.Images.Media.DESCRIPTION, "Image description");
-        // put image uri
-        imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode){
+            case 1:
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    // permission granted
+                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(cameraIntent, CAMERA_REQUEST);
 
-        // mở camera chụp ảnh
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        startActivityForResult(cameraIntent, IMAGE_PICK_CAMERA_CODE);
+                }else {
+                    // permisson denied
+                    Toast.makeText(this, "Bạn không thể chụp khi chưa được phép", Toast.LENGTH_SHORT).show();
+                }
+        }
     }
+
+    // lấy ảnh từ camera
+//    private void pickFromCamera() {
+//        // chọn hình ảnh từ máy ảnh, hình ảnh sẽ được trả về trong phương thức onActivityResult
+//        ContentValues values = new ContentValues();
+//        values.put(MediaStore.Images.Media.TITLE, "Image_Title");
+//        values.put(MediaStore.Images.Media.DESCRIPTION, "Image description");
+//        // put image uri
+//        imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+//
+//        // mở camera chụp ảnh
+//        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+//        startActivityForResult(cameraIntent, IMAGE_PICK_CAMERA_CODE);
+//    }
 
     private boolean checkStoragePermission() {
         // kiểm tra quyền
@@ -326,27 +378,28 @@ public class AddPhoneActivity extends AppCompatActivity {
         return readPermission && writePermission;
     }
 
-    private boolean checkCameraPermission() {
-        // kiểm tra quyền camera
-
-        boolean result = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.CAMERA) == (PackageManager.PERMISSION_GRANTED);
-        boolean result1 = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
-
-        return result && result1;
-    }
+//    private boolean checkCameraPermission() {
+//        // kiểm tra quyền camera
+//
+//        boolean result = ContextCompat.checkSelfPermission(this,
+//                CAMERA) == (PackageManager.PERMISSION_GRANTED);
+//        boolean result1 = ContextCompat.checkSelfPermission(this,
+//                Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
+//
+//        return result && result1;
+//    }
 
     // xử lý kết quả trả về từ onActivityResult()
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // ảnh được chọn từ thư viện của máy ảnh
 
         if (resultCode == RESULT_OK) {
             // ảnh được chọn
-            if (requestCode == IMAGE_PICK_CAMERA_CODE) {
+            if (requestCode == CAMERA_REQUEST) {
                 // set image
-                imgTaiAnh.setImageURI(imageUri);
+                Bitmap photo = (Bitmap) data.getExtras().get("data");
+                imgTaiAnh.setImageBitmap(photo);
             }
         }
 

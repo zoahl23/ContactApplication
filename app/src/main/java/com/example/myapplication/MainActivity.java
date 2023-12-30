@@ -59,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
     //trỏ vào key cụ thể ở đây là key contact để lấy data trong key đó
     private DatabaseReference contactsRef=get_key.child("contact");
 
+    String data_search="";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,19 +96,25 @@ public class MainActivity extends AppCompatActivity {
 //                Toast.makeText(MainActivity.this, listPN.get(i).getTen(), Toast.LENGTH_SHORT).show();
                 Intent xemChiTietIntent = new Intent(getBaseContext(), SeePhoneActivity.class);
                 //hàm getData_test đươc tạo ở trong phần PhoneAdapter.java
+                listPNFilter=adapterPN.getListPNFilter();
+
                 if(adapterPN.getData_test().length()>0){
-                    for(int p=0;p<listPN.size();p++){
-                        if(listPN.get(p).getTen().contains(adapterPN.getData_test())){
-                            xemChiTietIntent.putExtra("key", listPN.get(p).getKey());
-                            startActivity(xemChiTietIntent);
-                            Toast.makeText(MainActivity.this, "p", Toast.LENGTH_SHORT).show();
-                        }
-                    }
+//                    for(int p=0;p<listPN.size();p++){
+//                        if(listPN.get(p).getTen().contains(adapterPN.getData_test())){
+//                            xemChiTietIntent.putExtra("key", listPN.get(p).getKey());
+//                            startActivity(xemChiTietIntent);
+//                            Toast.makeText(MainActivity.this, "p", Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
+                    int position = adapterView.getPositionForView(view);
+                    xemChiTietIntent.putExtra("key", listPNFilter.get(position).getKey());
+                    startActivity(xemChiTietIntent);
+                    Toast.makeText(MainActivity.this, "Xem Chi Tiết...", Toast.LENGTH_SHORT).show();
                 }
                 else{
                     xemChiTietIntent.putExtra("key", listPN.get(i).getKey());
                     startActivity(xemChiTietIntent);
-                    Toast.makeText(MainActivity.this, "i", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(MainActivity.this, "i", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -236,6 +244,7 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
+                data_search=s;
                 searchView.clearFocus();
                 adapterPN.getFilter().filter(s);
                 return false;
@@ -260,15 +269,51 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0) {
                             // Xếp theo tên tăng dần
+                            Collections.sort(listPN, new Comparator<PhoneNumber>() {
+                                @Override
+                                public int compare(PhoneNumber o1, PhoneNumber o2) {
+                                    return (o1.getTen().compareTo(o2.getTen()));
+                                }
 
+                            });
+                            adapterPN = new PhoneAdapter(MainActivity.this, R.layout.lv_phone_number, listPN);
+                            lvPhoneNumber.setAdapter(adapterPN);
+                            registerForContextMenu(lvPhoneNumber);
                         }
                         else if (which == 1) {
                             // Xếp theo số điện thoại tăng dần
+                            Collections.sort(listPN, new Comparator<PhoneNumber>() {
+                                @Override
+                                public int compare(PhoneNumber o1, PhoneNumber o2) {
+                                    if (Integer.parseInt(o1.getSdt()) < Integer.parseInt(o2.getSdt())) {
+                                        return 1;
+                                    } else {
+                                        if (Integer.parseInt(o1.getSdt()) == Integer.parseInt(o2.getSdt())) {
+                                            return 0;
+                                        } else {
+                                            return -1;
+                                        }
+                                    }
 
+                                }
+
+                            });
+                            adapterPN = new PhoneAdapter(MainActivity.this, R.layout.lv_phone_number, listPN);
+                            lvPhoneNumber.setAdapter(adapterPN);
+                            registerForContextMenu(lvPhoneNumber);
                         }
                         else if (which == 2) {
                             // Xếp theo Mail
+                            Collections.sort(listPN, new Comparator<PhoneNumber>() {
+                                @Override
+                                public int compare(PhoneNumber o1, PhoneNumber o2) {
+                                    return (o1.getMail().compareTo(o2.getMail()));
+                                }
 
+                            });
+                            adapterPN = new PhoneAdapter(MainActivity.this, R.layout.lv_phone_number, listPN);
+                            lvPhoneNumber.setAdapter(adapterPN);
+                            registerForContextMenu(lvPhoneNumber);
                         }
                     }
                 });

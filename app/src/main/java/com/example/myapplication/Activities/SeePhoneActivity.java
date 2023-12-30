@@ -2,22 +2,27 @@ package com.example.myapplication.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 
+import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.CallLog;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
@@ -35,6 +40,7 @@ import com.bumptech.glide.Glide;
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.model.PhoneNumber;
+import com.github.chrisbanes.photoview.PhotoView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -57,7 +63,7 @@ public class SeePhoneActivity extends AppCompatActivity {
     private ImageView imgQr;
     private CircularImageView imgAvtS;
     private TextView tvNameS, tvSdtS, tvMailS;
-    private Button btnLuuQr, btnZalo;
+    private Button btnCallLog, btnZalo;
     private FloatingActionButton btnCall, btnChat, btnTaoQr, btnMail;
     private Bitmap bitmapQrImage;
     private ActionBar actionBar;
@@ -109,7 +115,7 @@ public class SeePhoneActivity extends AppCompatActivity {
             }
         });
 
-        btnLuuQr = findViewById(R.id.btnLuuQr);
+        btnCallLog = findViewById(R.id.btnCallLog);
         btnTaoQr = findViewById(R.id.btnTaoQr);
         btnZalo = findViewById(R.id.btnZalo);
         btnMail = findViewById(R.id.btnMail);
@@ -174,6 +180,7 @@ public class SeePhoneActivity extends AppCompatActivity {
                                 BitMatrix bitMatrix = multiFormatWriter.encode(pn.getSdt(), BarcodeFormat.QR_CODE, 150, 150);
                                 BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
                                 bitmapQrImage = barcodeEncoder.createBitmap(bitMatrix);
+                                showQrCodeAlert();
                                 imgQr.setImageBitmap(bitmapQrImage);
                             } catch (Exception e) {
                                 Log.d("Lỗi tạo QR: ", e.toString());
@@ -200,7 +207,7 @@ public class SeePhoneActivity extends AppCompatActivity {
                         Intent intentMail = new Intent(Intent.ACTION_SEND);
                         intentMail.putExtra(Intent.EXTRA_EMAIL, new String[]{pn.getMail()});
                         intentMail.putExtra(Intent.EXTRA_SUBJECT, "Gửi Mail từ App Contact");
-                        //intentMail.putExtra(Intent.EXTRA_TEXT, "hihi");
+                        intentMail.putExtra(Intent.EXTRA_TEXT, "hihi");
                         intentMail.setType("message/rfc822");
                         Log.d("mail", pn.getMail());
                         startActivity(intentMail);
@@ -248,12 +255,57 @@ public class SeePhoneActivity extends AppCompatActivity {
             }
         });
 
-        btnLuuQr.setOnClickListener(new View.OnClickListener() {
+        btnCallLog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                contactsRef.child(key).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        PhoneNumber pn = snapshot.getValue(PhoneNumber.class);
+                        // chuyển trang
+                        Intent listCall=new Intent(SeePhoneActivity.this, ListCallActivity.class);
+                        Bundle bundle=new Bundle();
+                        bundle.putString("call",pn.getSdt());
+                        listCall.putExtras(bundle);
+                        startActivity(listCall);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }
+        });
+    }
+
+    private void showQrCodeAlert() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Mã QR");
+
+        // Inflate layout tùy chỉnh cho AlertDialog
+        View customLayout = getLayoutInflater().inflate(R.layout.alert_qr_code, null);
+        PhotoView photoView = customLayout.findViewById(R.id.photoView);
+        photoView.setImageBitmap(bitmapQrImage);
+
+        // Đặt layout tùy chỉnh cho AlertDialog
+        builder.setView(customLayout);
+
+        builder.setPositiveButton("Lưu ảnh", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
                 saveImg();
             }
         });
+
+        builder.setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.show();
     }
 
     // xử lý nút back trên actionBar
