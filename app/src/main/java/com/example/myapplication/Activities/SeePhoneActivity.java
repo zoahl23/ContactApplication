@@ -22,6 +22,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.CallLog;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -57,6 +58,9 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 public class SeePhoneActivity extends AppCompatActivity {
@@ -107,6 +111,16 @@ public class SeePhoneActivity extends AppCompatActivity {
                 tvSdtS.setText(phoneNumber.getSdt());
                 tvMailS.setText(phoneNumber.getMail());
                 Glide.with(getBaseContext()).load(phoneNumber.getAvt()).into(imgAvtS);
+                try {
+                    if (phoneNumber.getSdt() != null && !phoneNumber.getSdt().isEmpty()) {
+                        saveCallHistory(phoneNumber.getSdt());
+                    } else {
+                        Toast.makeText(SeePhoneActivity.this, "Diện thoại null", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(SeePhoneActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+                    Log.d("loilon", e.toString());
+                }
             }
 
             @Override
@@ -158,7 +172,6 @@ public class SeePhoneActivity extends AppCompatActivity {
                         Toast.makeText(SeePhoneActivity.this,"Gọi Tới Số: "+ pn.getSdt(),
                                 Toast.LENGTH_SHORT).show();
                     }
-
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
 
@@ -277,6 +290,74 @@ public class SeePhoneActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    public String formatDurationSee(int durationInSeconds) {
+        int hours = durationInSeconds / 3600;
+        int minutes = (durationInSeconds % 3600) / 60;
+        int seconds = durationInSeconds % 60;
+
+        return String.format(Locale.ENGLISH, "%02d:%02d:%02d", hours, minutes, seconds);
+    }
+
+    // Thêm phương thức này để lấy lịch sử cuộc gọi và lưu nó vào Firebase
+    private void saveCallHistory(String phoneNumber) {
+        // Sử dụng ContentResolver để truy vấn lịch sử cuộc gọi
+        ContentResolver resolver = getContentResolver();
+        Cursor cursor = resolver.query(
+                CallLog.Calls.CONTENT_URI,
+                null,
+                CallLog.Calls.NUMBER + "=?",
+                new String[]{phoneNumber},
+                CallLog.Calls.DATE + " DESC"
+        );
+
+        if (cursor != null && cursor.moveToFirst()) {
+            // Khởi tạo tham chiếu cơ sở dữ liệu Firebase
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+            // Xóa tất cả dữ liệu cũ liên quan đến số điện thoại
+            databaseReference.child("call_history").removeValue();
+            do {
+                // Trích xuất chi tiết cuộc gọi
+                @SuppressLint("Range") String number = cursor.getString(cursor.getColumnIndex(CallLog.Calls.NUMBER));
+                @SuppressLint("Range") String type = cursor.getString(cursor.getColumnIndex(CallLog.Calls.TYPE));
+                @SuppressLint("Range") long timestamp = cursor.getLong(cursor.getColumnIndex(CallLog.Calls.DATE));
+                @SuppressLint("Range") int duration = cursor.getInt(cursor.getColumnIndex(CallLog.Calls.DURATION));
+
+                // Lưu lịch sử cuộc gọi vào Firebase
+
+                // Tạo một khóa duy nhất cho mỗi cuộc gọi (có thể sử dụng push())
+                String timestampString = Long.toString(timestamp);
+                String callId = databaseReference.child("call_history").child(timestampString).push().getKey();
+
+                // Chuyển đổi timestamp thành Date
+                Date date = new Date(timestamp);
+
+                // Format Date thành chuỗi theo định dạng mong muốn
+                String formattedDate = new SimpleDateFormat("dd MMMM, yyyy", Locale.ENGLISH).format(date);
+
+                String formattedDuration = formatDurationSee(duration);
+
+                // Tạo một bản đồ để lưu trữ chi tiết cuộc gọi
+                Map<String, Object> callDetails = new HashMap<>();
+                callDetails.put("id", timestampString);
+                callDetails.put("number", number);
+                callDetails.put("type", type);
+                callDetails.put("timestamp", formattedDate);
+                callDetails.put("duration", formattedDuration);
+
+                // Cập nhật lịch sử cuộc gọi vào Firebase
+                databaseReference.child("call_history").child(timestampString).updateChildren(callDetails);
+            } while (cursor.moveToNext());
+
+            cursor.close();
+        }
+        else {
+            // Khởi tạo tham chiếu cơ sở dữ liệu Firebase
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+            // Xóa tất cả dữ liệu cũ liên quan đến số điện thoại
+            databaseReference.child("call_history").removeValue();
+        }
     }
 
     private void showQrCodeAlert() {

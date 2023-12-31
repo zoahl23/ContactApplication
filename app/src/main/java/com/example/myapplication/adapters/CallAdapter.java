@@ -1,86 +1,61 @@
 package com.example.myapplication.adapters;
 
 import android.app.Activity;
-import android.content.Context;
-import android.icu.text.SimpleDateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.bumptech.glide.Glide;
+import com.blogspot.atifsoftwares.circularimageview.CircularImageView;
 import com.example.myapplication.R;
 import com.example.myapplication.model.CallHistory;
-import com.example.myapplication.model.PhoneNumber;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class CallAdapter extends BaseAdapter {
+public class CallAdapter extends ArrayAdapter {
 
-    private Context context;
-    private List<CallHistory> callHistoryData;
+    Activity context;
+    int resource;
+    ArrayList<CallHistory> listCallHistory;
 
-    private DatabaseReference databaseReference;
+    public CallAdapter(Activity context, int resource, ArrayList<CallHistory> listCallHistory) {
+        super(context, resource);
+        this.context = context;
+        this.resource = resource;
+        this.listCallHistory = listCallHistory;
+    }
 
     @Override
     public int getCount() {
-        return callHistoryData.size();
+        return listCallHistory.size();
     }
 
+    public ArrayList<CallHistory> getListCallHistory() {
+        return listCallHistory;
+    }
+
+    @NonNull
     @Override
-    public Object getItem(int position) {
-        return callHistoryData.get(position);
-    }
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+        LayoutInflater inflater = context.getLayoutInflater();
+        View customView = inflater.inflate(resource, null);
 
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
+        CircularImageView type = customView.findViewById(R.id.type);
+        TextView number = customView.findViewById(R.id.number);
+        TextView timestamp = customView.findViewById(R.id.timestamp);
+        TextView duration = customView.findViewById(R.id.duration);
 
-    // Cập nhật constructor để chấp nhận dữ liệu Firebase
-    public CallAdapter(Context context, List<CallHistory> callHistoryData, DatabaseReference databaseReference) {
-        this.context = context;
-        this.callHistoryData = callHistoryData;
-        this.databaseReference = databaseReference;
-    }
+        CallHistory ch = listCallHistory.get(position);
 
-    // Trong phương thức getView
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View view = convertView;
-        if (view == null) {
-            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.lv_call_history, parent, false);
-        }
+        type.setImageResource(R.drawable.baseline_call_to_made_24);
+        number.setText(ch.getNumber());
+        timestamp.setText(ch.getTimestamp());
+        duration.setText(ch.getDuration());
 
-        CallHistory callHistory = callHistoryData.get(position);
-
-        // Đặt số điện thoại
-        TextView numberView = view.findViewById(R.id.number);
-        numberView.setText(callHistory.getNumber());
-
-        // Đặt loại cuộc gọi
-        TextView typeView = view.findViewById(R.id.type);
-        typeView.setText(callHistory.getType());
-
-        // Đặt timestamp
-        TextView timestampView = view.findViewById(R.id.timestamp);
-        timestampView.setText(callHistory.getTimestamp());
-
-        // Đặt thời lượng
-        TextView durationView = view.findViewById(R.id.duration);
-        durationView.setText(String.format("00:00:%d", callHistory.getDuration()));
-
-        return view;
+        return customView;
     }
 }

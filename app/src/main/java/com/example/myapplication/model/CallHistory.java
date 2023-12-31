@@ -4,6 +4,7 @@ package com.example.myapplication.model;
 import java.io.Serializable;
 
 public class CallHistory implements Serializable {
+    private String id;
     private String number;
     private String type;
     private String timestamp;
@@ -11,11 +12,31 @@ public class CallHistory implements Serializable {
 
     public CallHistory() {}
 
-    public CallHistory(String number, String type, String timestamp, String duration) {
+    public CallHistory(String id, String number, String type, String timestamp, String duration) {
+        this.id = id;
         this.number = number;
         this.type = type;
         this.timestamp = timestamp;
         this.duration = duration;
+    }
+
+    @Override
+    public String toString() {
+        return "CallHistory{" +
+                "id='" + id + '\'' +
+                ", number='" + number + '\'' +
+                ", type='" + type + '\'' +
+                ", timestamp='" + timestamp + '\'' +
+                ", duration='" + duration + '\'' +
+                '}';
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getNumber() {
