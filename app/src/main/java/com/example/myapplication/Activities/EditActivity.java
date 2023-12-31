@@ -242,13 +242,14 @@ public class EditActivity extends AppCompatActivity {
                         } else if (which == 1) {
                             // Tải ảnh từ thư viện
 //                            chonAnh.launch("image/*");
-                            if (!checkStoragePermission()) {
-                                // ko cho truy cập vào ảnh
-                                Toast.makeText(EditActivity.this, "Bạn chưa cấp quyền truy cập ảnh", Toast.LENGTH_SHORT).show();
-                            }
-                            else {
-                                chonAnhLauncher.launch("image/*");
-                            }
+                            chonAnhLauncher.launch("image/*");
+//                            if (!checkStoragePermission()) {
+//                                // ko cho truy cập vào ảnh
+//                                Toast.makeText(EditActivity.this, "Bạn chưa cấp quyền truy cập ảnh", Toast.LENGTH_SHORT).show();
+//                            }
+//                            else {
+//                                chonAnhLauncher.launch("image/*");
+//                            }
                         }
                     }
                 });

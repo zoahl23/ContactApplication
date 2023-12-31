@@ -88,7 +88,7 @@ public class AddPhoneActivity extends AppCompatActivity {
     private StorageReference storageReference=firebaseStorage.getReference();
 
     // hằng số chọn ảnh
-//    private static final int IMAGE_PICK_CAMERA_CODE = 104;
+    private static final int IMAGE_PICK_CAMERA_CODE = 104;
     private static final int CAMERA_REQUEST = 1;
     // mảng quyền
     private String[] cameraPermission; // chụp và lưu
@@ -400,6 +400,10 @@ public class AddPhoneActivity extends AppCompatActivity {
                 // set image
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
                 imgTaiAnh.setImageBitmap(photo);
+            }
+            if (requestCode == IMAGE_PICK_CAMERA_CODE) {
+                // set image
+                imgTaiAnh.setImageURI(imageUri);
             }
         }
 
